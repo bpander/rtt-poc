@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Grid from 'components/Grid';
 import Sprite from 'components/Sprite';
 import CanvasContext from 'contexts/CanvasContext';
 import * as Game from 'definitions/Game';
@@ -30,16 +31,16 @@ export default class GameEngine extends React.Component<GameEngineProps, GameEng
     const camera = [ ...state.camera ] as Vector2;
 
     if (props.input.keysPressed.w) {
-      camera[1] -= 5;
+      camera[1] -= 10;
     }
     if (props.input.keysPressed.a) {
-      camera[0] -= 5;
+      camera[0] -= 10;
     }
     if (props.input.keysPressed.s) {
-      camera[1] += 5;
+      camera[1] += 10;
     }
     if (props.input.keysPressed.d) {
-      camera[0] += 5;
+      camera[0] += 10;
     }
 
     return { camera };
@@ -49,12 +50,12 @@ export default class GameEngine extends React.Component<GameEngineProps, GameEng
     super(props);
 
     this.state = {
-      camera: [ -10, -30 ],
+      camera: [ 0, 0 ],
       entities: [
         {
-          position: [ -5, -25 ],
+          position: [ 50, 100 ],
           facets: [
-            { type: Game.FacetType.Sprite, size: [ 60, 120 ] },
+            { type: Game.FacetType.Sprite, size: [ 100, 200 ] },
           ],
         },
       ],
@@ -67,16 +68,25 @@ export default class GameEngine extends React.Component<GameEngineProps, GameEng
         {ctx => {
           ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-          return this.state.entities.map(entity =>
-            entity.facets.map((facet, i) => (
-              (facet.type === Game.FacetType.Sprite) && (
-                <Sprite
-                  key={i}
-                  position={subtract(entity.position, this.state.camera)}
-                  facet={facet}
-                />
-              )
-            ))
+          return (
+            <React.Fragment>
+              <Grid
+                spacing={50}
+                position={subtract([ 0, 0 ], this.state.camera)}
+                color={'#cccccc'}
+              />
+              {this.state.entities.map(entity => (
+                entity.facets.map((facet, i) => (
+                  (facet.type === Game.FacetType.Sprite) && (
+                    <Sprite
+                      key={i}
+                      position={subtract(entity.position, this.state.camera)}
+                      facet={facet}
+                    />
+                  )
+                ))
+              ))}
+            </React.Fragment>
           );
         }}
       </CanvasContext.Consumer>

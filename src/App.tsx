@@ -19,8 +19,8 @@ class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
 
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.width = window.innerWidth * 2;
+    this.height = window.innerHeight * 2;
 
     this.input = {
       lastKeysPressed: {},
@@ -41,8 +41,8 @@ class App extends React.Component<{}, AppState> {
   }
 
   onResize = () => {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.width = window.innerWidth * 2;
+    this.height = window.innerHeight * 2;
   };
 
   onKeyDown = (e: KeyboardEvent) => {
