@@ -7,15 +7,21 @@ import Vector2 from 'definitions/Vector2';
 interface SpriteProps {
   position: Vector2;
   facet: Game.SpriteFacet;
+  size: number;
 }
 
 export default class Sprite extends React.Component<SpriteProps> {
   render() {
-    const { facet, position } = this.props;
+    const { facet, position, size } = this.props;
     return (
       <CanvasContext.Consumer>
         {ctx => {
-          ctx.fillRect(position[0], position[1], facet.size[0], facet.size[1]);
+          ctx.fillRect(
+            position[0] * size,
+            position[1] * size,
+            facet.size[0] * size,
+            facet.size[1] * size,
+          );
           return null;
         }}
       </CanvasContext.Consumer>

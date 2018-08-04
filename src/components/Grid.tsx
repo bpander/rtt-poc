@@ -15,8 +15,14 @@ const Grid: React.SFC<GridProps> = props => (
     {ctx => {
       const numLongitudes = Math.ceil(ctx.canvas.width / props.spacing);
       const numLatitudes = Math.ceil(ctx.canvas.height / props.spacing);
-      let x = props.position[0] % props.spacing;
-      let y = props.position[1] % props.spacing;
+      let x = props.position[0] * props.spacing % props.spacing;
+      let y = props.position[1] * props.spacing % props.spacing;
+      if (y < 0) {
+        y += props.spacing;
+      }
+      if (x < 0) {
+        x += props.spacing;
+      }
       ctx.lineWidth = 1;
       ctx.strokeStyle = props.color;
       times(numLongitudes, () => {

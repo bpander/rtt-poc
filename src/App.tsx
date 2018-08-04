@@ -73,6 +73,8 @@ class App extends React.Component<{}, AppState> {
           time={this.state.time}
           delta={this.state.delta}
           input={this.input}
+          width={this.width}
+          height={this.height}
         />
       </Canvas>
     );

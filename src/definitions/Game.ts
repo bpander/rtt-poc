@@ -1,5 +1,7 @@
 import Vector2 from 'definitions/Vector2';
 
+export const CELL_SIZE = 50;
+
 export enum FacetType {
   Collider,
   Sprite,
