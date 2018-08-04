@@ -1,20 +1,50 @@
 import * as React from 'react';
-import './App.css';
 
-import logo from './logo.svg';
+import 'App.css';
+import Canvas from 'components/Canvas';
+import Game from 'components/Game';
 
-class App extends React.Component {
+interface AppState {
+  time: number;
+  delta: number;
+}
+
+class App extends React.Component<{}, AppState> {
+
+  width: number;
+  height: number;
+
+  constructor(props: {}) {
+    super(props);
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.state = {
+      delta: 0,
+      time: 0,
+    };
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.onResize);
+    this.onAnimationFrame(0);
+  }
+
+  onResize = () => {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+  };
+
+  onAnimationFrame: FrameRequestCallback = time => {
+    const delta = time - this.state.time;
+    this.setState({ time, delta });
+    window.requestAnimationFrame(this.onAnimationFrame);
+  };
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </div>
+      <Canvas width={this.width} height={this.height}>
+        <Game time={this.state.time} delta={this.state.delta} />
+      </Canvas>
     );
   }
 }
