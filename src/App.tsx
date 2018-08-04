@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import 'App.css';
 import Canvas from 'components/Canvas';
-import Game from 'components/Game';
+import GameEngine from 'components/GameEngine';
 
 interface AppState {
   time: number;
@@ -43,7 +43,7 @@ class App extends React.Component<{}, AppState> {
   render() {
     return (
       <Canvas width={this.width} height={this.height}>
-        <Game time={this.state.time} delta={this.state.delta} />
+        <GameEngine time={this.state.time} delta={this.state.delta} />
       </Canvas>
     );
   }
