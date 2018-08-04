@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import 'App.css';
 import Canvas from 'components/Canvas';
 import GameEngine from 'components/GameEngine';
 
