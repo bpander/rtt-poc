@@ -48,14 +48,14 @@ class App extends React.Component<{}, AppState> {
   onKeyDown = (e: KeyboardEvent) => {
     this.input.keysPressed = {
       ...this.input.keysPressed,
-      [e.key]: true,
+      [e.key.toLowerCase()]: true,
     };
   };
 
   onKeyUp = (e: KeyboardEvent) => {
     this.input.keysPressed = {
       ...this.input.keysPressed,
-      [e.key]: false,
+      [e.key.toLowerCase()]: false,
     };
   };
 

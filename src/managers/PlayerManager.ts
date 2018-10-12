@@ -11,7 +11,10 @@ const add = (v1: Vector2, v2: Vector2): Vector2 => {
 
 export const processInput = (player: Game.Entity, entities: Game.Entity[], input: Input): Game.Entity => {
   const translate: Vector2 = [ 0, 0 ];
-  const speed = 0.25;
+  let speed = 0.125;
+  if (input.keysPressed.shift) {
+    speed *= 1.5;
+  }
 
   if (input.keysPressed.w) {
     translate[1] -= speed;
