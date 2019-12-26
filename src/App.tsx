@@ -1,79 +1,68 @@
-import React, { Fragment } from 'react';
-import createGraph, { Graph, Node } from 'ngraph.graph';
-import { nba } from 'ngraph.path';
-import { times } from 'ramda';
+import React from 'react';
 
-const getNodes = (graph: Graph) => {
-  const arr: Node[] = [];
-  graph.forEachNode(node => { arr.push(node); });
-  return arr;
-};
+import { Grid } from 'components/Grid';
+import { Vector2, Line2d, getAngleBetweenPoints } from 'geo2d/geo2d';
+import { isSameOrBetween, isBetween } from 'util/numbers';
 
-type Vector2 = [number, number];
+interface Collider {
+  points: Vector2[];
+}
 
-const getDistance = ([x1, y1]: Vector2, [x2, y2]: Vector2): number => {
-  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-};
+const scaleFactor = 25;
 
-const idToV2 = (id: string | number): Vector2 => {
-  const [x, y] = (id as string).split(',').map(Number);
-  return [x, y].map(n => n * 25 + 30) as Vector2;
-};
+const scaleVector2 = (v2: Vector2) => v2.map(n => n * scaleFactor) as Vector2;
+const scaleLine2d = (line2d: Line2d) => line2d.map(scaleVector2) as Line2d;
 
-const g = createGraph<Vector2>();
-(window as any).g = g;
+const colliders: Collider[] = [
+  { points: [ [2, 2], [5, 2], [5, 3], [2, 3] ] },
+  { points: [ [2, 4], [5, 4], [5, 5], [2, 5] ] },
+];
 
-times(x => {
-  times(y => {
-    times(x1 => {
-      times(y1 => {
-        if (x1 === 1 && y1 === 1) {
+const getLinks = () => {
+  const links: Line2d[] = [];
+  const allPoints = colliders.map(c => c.points).flat();
+  colliders.forEach(collider => {
+    collider.points.forEach((p, i, points) => {
+      const p0 = points[(i + points.length - 1) % points.length];
+      const p2 = points[(i + 1) % points.length];
+      const theta0 = getAngleBetweenPoints(p, p0);
+      const theta2 = getAngleBetweenPoints(p, p2);
+      allPoints.forEach(pOther => {
+        if (pOther === p) {
           return;
         }
-        g.addLink([x, y].join(), [x + (x1 - 1), y + (y1 - 1)].join());
-      }, 3);
-    }, 3);
-  }, 16);
-}, 16);
-
-g.removeNode('13,5');
-g.removeNode('12,5');
-g.removeNode('12,4');
-const pathfinder = nba(g, { distance: (a, b) => {
-  return getDistance(idToV2(a.id), idToV2(b.id));
-}});
-const path = pathfinder.find('12,2', '13,14');
+        const thetaOther = getAngleBetweenPoints(p, pOther);
+        if (theta0 > theta2) {
+          if (!isSameOrBetween(thetaOther, theta0, theta2)) {
+            links.push([p, pOther]);
+          }
+        } else {
+          if (isBetween(thetaOther, theta0, theta2)) {
+            links.push([p, pOther]);
+          }
+        }
+      });
+    });
+  });
+  return links;
+};
 
 export const App: React.FC = () => {
-  const nodes = getNodes(g);
+  const links = getLinks();
+
   return (
-    <svg width={800} height={450} viewBox="0 0 800 450">
-      {nodes.map(node => {
-        const [finalX, finalY] = idToV2(node.id);
-        return (
-          <Fragment key={node.id}>
-            <circle cx={finalX} cy={finalY} r={3} />
-            {node.links.map(link => {
-              const [finalX2, finalY2] = idToV2(link.fromId);
-              return (
-                <line stroke="black" key={link.id} x1={finalX} y1={finalY} x2={finalX2} y2={finalY2} />
-              );
-            })}
-          </Fragment>
-        );
-      })}
-      {path.map((node, i) => {
-        const nextNode = path[i + 1];
-        if (!nextNode) {
-          return null;
-        }
-        const [x1, y1] = idToV2(node.id);
-        const [x2, y2] = idToV2(nextNode.id);
-        return (
-          <line key={node.id} {...{ x1, x2, y1, y2 }} stroke="red" strokeWidth={3} />
-        );
-      })}
+    <svg width={800} height={450} viewBox="0 0 800 450" style={{ border: '1px solid black' }}>
+      <Grid width={800} height={450} scale={scaleFactor} />
+      <g stroke="black" strokeWidth="3" fill="rgba(0, 0, 0, 0.2)">
+        {colliders.map((collider, i) => (
+          <polygon key={i} points={collider.points.map(scaleVector2).map(p => p.join()).join(' ')} />
+        ))}
+      </g>
+      <g stroke="red">
+        {links.map(scaleLine2d).map(([[x1, y1], [x2, y2]], i) => (
+          <line key={i} {...{x1, y1, x2, y2}} />
+        ))}
+      </g>
     </svg>
   );
 };
-
