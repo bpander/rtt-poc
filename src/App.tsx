@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Grid } from 'components/Grid';
 import { Vector2, Line2, Shape2 } from 'geo2d/core';
-import { getNavMesh2d, getLinks } from 'geo2d/navMesh2d';
+import { getNavMesh2d, getLinks, getPath } from 'geo2d/navMesh2d';
 
 const scaleFactor = 50;
 
@@ -12,18 +12,19 @@ const scaleLine2 = (line2: Line2) => line2.map(scaleVector2) as Line2;
 
 const colliders: Shape2[] = [
   [ [2, 2], [5, 2], [5, 3], [2, 3] ],
-  [ [2, 4], [5, 4], [5, 5], [2, 5] ],
+  [ [2, 4], [6, 4], [6, 6], [2, 6] ],
 ];
 
-const player = scaleVector2([10, 8]);
+const player: Vector2 = [10, 8];
 
 export const App: React.FC = () => {
   const navMesh = useMemo(() => getNavMesh2d(colliders), []);
+  const [path, setPath] = useState<Vector2[]>([]);
 
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
     const destination = descaleVector2([ e.clientX - left, e.clientY - top ]);
-    console.log(destination);
+    setPath(getPath(navMesh, colliders, player, destination));
   };
 
   return (
@@ -40,7 +41,16 @@ export const App: React.FC = () => {
           <line key={i} {...{x1, y1, x2, y2}} />
         ))}
       </g>
-      <circle cx={player[0]} cy={player[1]} r={15} fill="blue" />
+      <circle cx={player[0] * scaleFactor} cy={player[1] * scaleFactor} r={15} fill="blue" />
+      {path && path.map((v2, i) => {
+        const previous = path[i - 1];
+        if (!previous) {
+          return null;
+        }
+        const [ x1, y1 ] = scaleVector2(v2);
+        const [ x2, y2 ] = scaleVector2(previous);
+        return <line key={i} {...{ x1, y1, x2, y2 }} stroke="blue" strokeWidth="3" />;
+      })}
     </svg>
   );
 };
