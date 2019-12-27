@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { Grid } from 'components/Grid';
 import { Vector2, Line2, Shape2 } from 'geo2d/core';
-import { getNavMesh2d } from 'geo2d/navMesh2d';
+import { getNavMesh2d, getLinks } from 'geo2d/navMesh2d';
 
 const scaleFactor = 50;
 
@@ -18,7 +18,8 @@ const colliders: Shape2[] = [
 const player = scaleVector2([10, 8]);
 
 export const App: React.FC = () => {
-  const links = useMemo(() => getNavMesh2d(colliders), []);
+  const navMesh = useMemo(() => getNavMesh2d(colliders), []);
+
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
     const destination = descaleVector2([ e.clientX - left, e.clientY - top ]);
@@ -35,7 +36,7 @@ export const App: React.FC = () => {
         ))}
       </g>
       <g stroke="red">
-        {links.map(scaleLine2).map(([[x1, y1], [x2, y2]], i) => (
+        {getLinks(navMesh).map(scaleLine2).map(([[x1, y1], [x2, y2]], i) => (
           <line key={i} {...{x1, y1, x2, y2}} />
         ))}
       </g>
