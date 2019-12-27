@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useContext, useEffect } from 'react';
-import { Grid } from 'engine/components/Grid';
+import { Grid } from 'sprites/Grid';
 import { getLinks, getNavMesh2d, getPath } from 'geo2d/navMesh2d';
 import { Vector2, Line2, Shape2 } from 'geo2d/core';
 import { EngineContext } from 'engine/components/Engine';
-import { FacetType } from 'engine/models/Entity';
+import { FacetType, Entity } from 'engine/models/Entity';
 import { Tank } from 'sprites/Tank';
 
 const scaleFactor = 50;
@@ -19,19 +19,30 @@ const colliders: Shape2[] = [
 
 const playerStart: Vector2 = [ 10, 8 ];
 
+const initialEntities: Entity[] = [
+  {
+    id: 'grid',
+    position: [0, 0],
+    rotation: 0,
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 0, 0 ], Component: Grid },
+    ],
+  },
+  {
+    id: 'player_tank',
+    position: [ 10, 10 ],
+    rotation: 0,
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Tank },
+    ],
+  },
+];
+
 export const MainScene: React.FC = () => {
   const ctx = useContext(EngineContext);
   const { addEntity } = ctx
-  useEffect(() => {
-    addEntity({
-      id: 'player_tank',
-      position: [ 10, 10 ],
-      rotation: 0,
-      facets: [
-        { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Tank },
-      ],
-    });
-  }, [ addEntity ]);
+  useEffect(() => { initialEntities.forEach(addEntity); }, [ addEntity ]);
+
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
     setDestination(descaleVector2([ e.clientX - left, e.clientY - top ]));
