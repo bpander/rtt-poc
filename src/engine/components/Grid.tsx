@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { times } from 'util/arrays';
+import { EngineContext } from './Engine';
 
 interface GridProps {
   width: number;
   height: number;
-  scale: number;
 }
 
 export const Grid: React.FC<GridProps> = props => {
-  const { width, height, scale } = props;
+  const ctx = useContext(EngineContext);
+  const { scale } = ctx.camera;
+  const { width, height } = props;
   const numLatitudes = Math.floor(height / scale);
   const numLongitudes = Math.floor(width / scale);
 
