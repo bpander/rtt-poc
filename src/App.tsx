@@ -12,7 +12,8 @@ const scaleLine2 = (line2: Line2) => line2.map(scaleVector2) as Line2;
 
 const colliders: Shape2[] = [
   [ [2, 2], [5, 2], [5, 3], [2, 3] ],
-  [ [2, 4], [6, 4], [6, 6], [2, 6] ],
+  [ [2, 4], [8, 4], [8, 6], [2, 6] ],
+  [ [1, 7], [5, 7], [5, 8], [1, 8] ],
 ];
 
 const player: Vector2 = [10, 8];
