@@ -13,19 +13,21 @@ const scaleLine2 = (line2: Line2) => line2.map(scaleVector2) as Line2;
 const colliders: Shape2[] = [
   [ [2, 2], [5, 2], [5, 3], [2, 3] ],
   [ [2, 4], [8, 4], [8, 6], [2, 6] ],
-  [ [1, 7], [5, 7], [5, 8], [1, 8] ],
+  [ [1, 5.5], [5, 5.5], [5, 8], [1, 8] ],
 ];
 
 const player: Vector2 = [10, 8];
 
 export const App: React.FC = () => {
   const navMesh = useMemo(() => getNavMesh2d(colliders), []);
-  const [path, setPath] = useState<Vector2[]>([]);
+  const [destination, setDestination] = useState<Vector2>([ 1.38, 5.32 ]);
+  const path = useMemo(() => {
+    return getPath(navMesh, colliders, player, destination);
+  }, [ destination, navMesh ]);
 
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
-    const destination = descaleVector2([ e.clientX - left, e.clientY - top ]);
-    setPath(getPath(navMesh, colliders, player, destination));
+    setDestination(descaleVector2([ e.clientX - left, e.clientY - top ]));
   };
 
   return (
