@@ -1,7 +1,11 @@
+import { createSelector } from 'reselect';
+
+import { Shape2, addVector2 } from 'geo2d/core';
+import { getNavMesh2d } from 'geo2d/navMesh2d';
 import { createSlice } from 'lib/create-slice';
 
 import { Camera, emptyCamera } from '../models/Camera';
-import { Entity } from '../models/Entity';
+import { Entity, isFacetType, FacetType } from '../models/Entity';
 
 export interface EngineState {
   width: number;
@@ -30,4 +34,22 @@ export const tick = configureAction<number>(
 export const addEntities = configureAction<Entity[]>(
   'ADD_ENTITIES',
   entities => state => ({ ...state, entities: [ ...state.entities, ...entities ] }),
+);
+
+export const getNavMeshHoles = createSelector(
+  (engineState: EngineState) => engineState.entities,
+  entities => {
+    const holes: Shape2[] = [];
+    entities.forEach(entity => {
+      const holeFacets = entity.facets.filter(isFacetType(FacetType.NavMeshHole));
+      const holeShapes = holeFacets.map(f => f.shape.map(v2 => addVector2(v2, entity.position)));
+      holes.push(...holeShapes);
+    });
+    return holes;
+  },
+);
+
+export const getNavMesh = createSelector(
+  getNavMeshHoles,
+  holes => getNavMesh2d(holes),
 );

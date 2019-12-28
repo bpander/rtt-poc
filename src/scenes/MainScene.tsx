@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Grid } from 'sprites/Grid';
-import { getNavMesh2d, getPath } from 'geo2d/navMesh2d';
+import { getPath, getLinks } from 'geo2d/navMesh2d';
 import { Vector2, Shape2, scaleVector2 } from 'geo2d/core';
-import { FacetType, Entity, Facet, FacetMap, FacetBase } from 'engine/models/Entity';
+import { FacetType, Entity, Facet, FacetMap } from 'engine/models/Entity';
 import { Tank } from 'sprites/Tank';
 import { Box } from 'sprites/Box';
 import { useDispatch } from 'react-redux';
-import { addEntities } from 'engine/duck';
+import { addEntities, getNavMesh } from 'engine/duck';
 import { useRootState } from 'root';
 
 const colliders: Shape2[] = [
@@ -37,6 +37,34 @@ interface ChessEntity extends Entity {
 
 const initialEntities: ChessEntity[] = [
   {
+    id: 'navigable_area',
+    position: [ 0, 0 ],
+    rotation: 0,
+    facets: [
+      {
+        type: FacetType.SvgSprite,
+        size: [ 0, 0 ],
+        Component: () => {
+          const { width, height, camera } = useRootState('engine');
+          const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
+            const { left, top } = e.currentTarget.getBoundingClientRect();
+            const d = scaleVector2([ e.clientX - left, e.clientY - top ], 1 / camera.scale);
+            console.log(d);
+          };
+          return (
+              <rect
+                width={width}
+                height={height}
+                fill="rgba(0, 0, 0, 0)"
+                onClick={onAreaClick}
+              />
+          );
+        },
+      }
+    ],
+    chessFacets: [],
+  },
+  {
     id: 'grid',
     position: [0, 0],
     rotation: 0,
@@ -63,6 +91,7 @@ const initialEntities: ChessEntity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
+      { type: FacetType.NavMeshHole, shape: [ [ 0, 0 ], [ 2, 0 ], [ 2, 2 ], [ 0, 2 ] ] },
     ],
     chessFacets: [],
   },
@@ -70,17 +99,19 @@ const initialEntities: ChessEntity[] = [
 
 export const MainScene: React.FC = () => {
   const dispatch = useDispatch();
-  const { camera } = useRootState('engine');
+  const engine = useRootState('engine');
   useEffect(() => {
     dispatch(addEntities(initialEntities));
   }, [ dispatch ]);
 
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
-    setDestination(scaleVector2([ e.clientX - left, e.clientY - top ], camera.scale));
+    setDestination(scaleVector2([ e.clientX - left, e.clientY - top ], engine.camera.scale));
   };
   const [destination, setDestination] = useState<Vector2>();
-  const navMesh = useMemo(() => getNavMesh2d(colliders), []);
+  const navMesh = getNavMesh(engine);
+  const links = getLinks(navMesh);
+  // console.log(links);
   const path = useMemo(() => {
     return destination && getPath(navMesh, colliders, playerStart, destination);
   }, [ destination, navMesh ]);
@@ -88,19 +119,11 @@ export const MainScene: React.FC = () => {
 
   // return (
   //   <g>
-  //     <rect width={ctx.width} height={ctx.height} fill="rgba(0, 0, 0, 0)" onClick={onAreaClick} />
-  //     <Grid width={ctx.width} height={ctx.height} />
-  //     <g stroke="black" strokeWidth="3" fill="rgba(0, 0, 0, 0.2)">
-  //       {colliders.map((collider, i) => (
-  //         <polygon key={i} points={collider.map(scaleVector2).map(p => p.join()).join(' ')} />
-  //       ))}
-  //     </g>
   //     <g stroke="red">
   //       {getLinks(navMesh).map(scaleLine2).map(([[x1, y1], [x2, y2]], i) => (
   //         <line key={i} {...{x1, y1, x2, y2}} />
   //       ))}
   //     </g>
-  //     <circle cx={playerStart[0] * scaleFactor} cy={playerStart[1] * scaleFactor} r={15} fill="blue" />
   //     {path && path.map((v2, i) => {
   //       const previous = path[i - 1];
   //       if (!previous) {

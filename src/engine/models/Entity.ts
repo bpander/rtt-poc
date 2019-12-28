@@ -1,10 +1,10 @@
-import { Vector2 } from 'geo2d/core';
+import { Vector2, Shape2 } from 'geo2d/core';
 
 export enum FacetType {
   Collider,
   SvgSprite,
-  Metadata,
   NavMeshAgent,
+  NavMeshHole,
 }
 
 export interface FacetBase {
@@ -24,22 +24,21 @@ export interface SvgSpriteFacet extends FacetBase {
   Component: React.ComponentType<EntityComponentProps>;
 }
 
-export interface MetadataFacet<T> extends FacetBase {
-  type: FacetType.Metadata;
-  key: string;
-  data: T;
-}
-
 export interface NavMeshAgentFacet extends FacetBase {
   type: FacetType.NavMeshAgent;
   destination: Vector2 | null;
 }
 
+export interface NavMeshHoleFacet extends FacetBase {
+  type: FacetType.NavMeshHole;
+  shape: Shape2;
+}
+
 export type FacetMap = {
   [FacetType.Collider]: ColliderFacet;
   [FacetType.SvgSprite]: SvgSpriteFacet;
-  [FacetType.Metadata]: MetadataFacet<any>;
   [FacetType.NavMeshAgent]: NavMeshAgentFacet;
+  [FacetType.NavMeshHole]: NavMeshHoleFacet;
 }
 
 type ValueOf<T> = T[keyof T];

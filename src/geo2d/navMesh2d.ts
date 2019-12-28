@@ -26,18 +26,18 @@ const toLines = (shape: Shape2): Line2[] => {
   return shape.map((p, i) => line(p, shape[(i + 1) % shape.length]));
 };
 
-export const getNavMesh2d = (colliders: Shape2[]): Graph<Vector2, number> => {
-  const links: Line2[] = colliders.map(toLines).flat();
-  const remainingColliders = [ ...colliders ];
+export const getNavMesh2d = (holes: Shape2[]): Graph<Vector2, number> => {
+  const links: Line2[] = holes.map(toLines).flat();
+  const remainingHoles = [ ...holes ];
   while (true) {
-    const collider = remainingColliders.pop();
-    if (!collider) { break; }
-    const angles = getAngles(collider);
-    remainingColliders.forEach(otherCollider => {
-      const colliderLines = removeFirst(remainingColliders, otherCollider).map(toLines).flat();
-      getAngles(otherCollider).forEach(colliderAngle => {
+    const hole = remainingHoles.pop();
+    if (!hole) { break; }
+    const angles = getAngles(hole);
+    remainingHoles.forEach(otherHole => {
+      const holeLines = removeFirst(remainingHoles, otherHole).map(toLines).flat();
+      getAngles(otherHole).forEach(holeAngle => {
         angles.forEach(angle => {
-          const link = getLinkBetweenAngles(angle, colliderAngle, colliderLines);
+          const link = getLinkBetweenAngles(angle, holeAngle, holeLines);
           if (link) { links.push(link); }
         });
       });
@@ -63,26 +63,26 @@ const isInsideAngle = (angle: Angle, theta: number): boolean => {
   return !isBetween(theta, angle.thetaA, angle.thetaB);
 }
 
-const getLinkBetweenAngles = (angle1: Angle, angle2: Angle, colliderLines: Line2[]): Line2 | null => {
+const getLinkBetweenAngles = (angle1: Angle, angle2: Angle, holeLines: Line2[]): Line2 | null => {
   const theta1 = getAngleBetweenPoints(angle1.p, angle2.p);
   const theta2 = getAngleBetweenPoints(angle2.p, angle1.p);
   if (isInsideAngle(angle1, theta1) || isInsideAngle(angle2, theta2)) {
     return null;
   }
   const candidateLine = line(angle1.p, angle2.p);
-  if (colliderLines.some(colliderLine => getIntersection(candidateLine, colliderLine))) {
+  if (holeLines.some(holeLine => getIntersection(candidateLine, holeLine))) {
     return null;
   }
   return candidateLine;
 };
 
-const getLinkToPoint = (angle: Angle, p: Vector2, colliderLines: Line2[]): Line2 | null => {
+const getLinkToPoint = (angle: Angle, p: Vector2, holeLines: Line2[]): Line2 | null => {
   const theta = getAngleBetweenPoints(angle.p, p);
   if (isInsideAngle(angle, theta)) {
     return null;
   }
   const candidateLine = line(angle.p, p);
-  if (colliderLines.some(colliderLine => getIntersection(colliderLine, candidateLine))) {
+  if (holeLines.some(holeLine => getIntersection(holeLine, candidateLine))) {
     return null;
   }
   return candidateLine;
@@ -95,13 +95,13 @@ const cloneMesh = (navMesh: Graph<Vector2, number>) => {
   return g;
 };
 
-export const getPath = (navMesh: Graph<Vector2, number>, colliders: Shape2[], start: Vector2, end: Vector2) => {
+export const getPath = (navMesh: Graph<Vector2, number>, holes: Shape2[], start: Vector2, end: Vector2) => {
   const clone = cloneMesh(navMesh);
   const startId = start.join();
   const endId = end.join();
   const startToEnd: Line2 = [start, end];
-  const canLinkStartToEnd = colliders.map(toLines).flat().every(colliderLine => {
-    return !getIntersection(startToEnd, colliderLine);
+  const canLinkStartToEnd = holes.map(toLines).flat().every(holeLine => {
+    return !getIntersection(startToEnd, holeLine);
   });
 
   clone.addNode(startId, start);
@@ -110,13 +110,13 @@ export const getPath = (navMesh: Graph<Vector2, number>, colliders: Shape2[], st
     clone.addLink(startId, endId, getDistance(start, end));
   }
 
-  colliders.forEach(collider => {
-    const otherColliders = removeFirst(colliders, collider);
-    const colliderLines = otherColliders.map(toLines).flat();
-    const angles = getAngles(collider);
+  holes.forEach(hole => {
+    const otherHoles = removeFirst(holes, hole);
+    const holeLines = otherHoles.map(toLines).flat();
+    const angles = getAngles(hole);
     angles.forEach(angle => {
-      const startLink = getLinkToPoint(angle, start, colliderLines);
-      const endLink = getLinkToPoint(angle, end, colliderLines);
+      const startLink = getLinkToPoint(angle, start, holeLines);
+      const endLink = getLinkToPoint(angle, end, holeLines);
       if (startLink) {
         clone.addLink(startId, angle.p.join(), getDistance(start, angle.p));
       }
