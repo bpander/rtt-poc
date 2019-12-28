@@ -3,7 +3,9 @@ import { useDispatch } from 'react-redux';
 
 import { FacetType, Entity } from 'engine/models/Entity';
 import { updateEngine, getNavMeshHoles } from 'engine/duck';
-import { Tank } from 'xhess/sprites/Tank';
+import { Rock } from 'xhess/sprites/Rock';
+import { Paper } from 'xhess/sprites/Paper';
+import { Scissors } from 'xhess/sprites/Scissors';
 import { Box } from 'xhess/sprites/Box';
 import { NavigableArea } from 'xhess/sprites/NavigableArea';
 import { updateXhess } from 'xhess/duck';
@@ -18,11 +20,29 @@ const initialEntities: Entity[] = [
     ],
   },
   {
-    id: 'player_tank',
+    id: 'player_rock',
     position: [ 10, 10 ],
     rotation: 0,
     facets: [
-      { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Tank },
+      { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Rock },
+      { type: FacetType.NavMeshAgent, path: [] },
+    ],
+  },
+  {
+    id: 'player_paper',
+    position: [ 12, 10 ],
+    rotation: 0,
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Paper },
+      { type: FacetType.NavMeshAgent, path: [] },
+    ],
+  },
+  {
+    id: 'player_scissors',
+    position: [ 14, 10 ],
+    rotation: 0,
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Scissors },
       { type: FacetType.NavMeshAgent, path: [] },
     ],
   },
@@ -61,7 +81,11 @@ export const MainScene: React.FC = () => {
     }));
     dispatch(updateXhess({
       teams: [
-        { color: 'blue', entities: [ 'player_tank' ] },
+        {
+          name: 'blue',
+          color: 'blue',
+          entities: [ 'player_rock', 'player_paper', 'player_scissors' ],
+        },
       ],
     }));
   }, [ dispatch ]);
