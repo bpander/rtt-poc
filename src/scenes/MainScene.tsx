@@ -61,7 +61,9 @@ const initialEntities: ChessEntity[] = [
     id: 'box1',
     position: [ 2, 2 ],
     rotation: 0,
-    facets: [],
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
+    ],
     chessFacets: [],
   },
 ];
