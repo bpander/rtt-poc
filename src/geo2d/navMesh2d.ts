@@ -1,4 +1,4 @@
-import { getAngleBetweenPoints, Vector2, Line2, Shape2, getIntersection, getDistance } from './core';
+import { getAngleBetweenPoints, Vector2, Line2, Shape2, getIntersection, getDistance, isSameVector2 } from './core';
 import { isSameOrBetween, isBetween } from 'util/numbers';
 import createGraph, { Graph, Link } from 'ngraph.graph';
 import { aStar } from 'ngraph.path';
@@ -59,15 +59,22 @@ export const getNavMesh2d = (holes: Shape2[]): Graph<Vector2, number> => {
 
 const isInsideAngle = (angle: Angle, theta: number): boolean => {
   if (angle.thetaA > angle.thetaB) {
+    return isBetween(theta, angle.thetaA, angle.thetaB);
+  }
+  return !isBetween(theta, angle.thetaA, angle.thetaB);
+};
+
+const isInsideOrSameAngle = (angle: Angle, theta: number): boolean => {
+  if (angle.thetaA > angle.thetaB) {
     return isSameOrBetween(theta, angle.thetaA, angle.thetaB);
   }
   return !isBetween(theta, angle.thetaA, angle.thetaB);
-}
+};
 
 const getLinkBetweenAngles = (angle1: Angle, angle2: Angle, holeLines: Line2[]): Line2 | null => {
   const theta1 = getAngleBetweenPoints(angle1.p, angle2.p);
   const theta2 = getAngleBetweenPoints(angle2.p, angle1.p);
-  if (isInsideAngle(angle1, theta1) || isInsideAngle(angle2, theta2)) {
+  if (isInsideOrSameAngle(angle1, theta1) || isInsideOrSameAngle(angle2, theta2)) {
     return null;
   }
   const candidateLine = line(angle1.p, angle2.p);
@@ -102,7 +109,8 @@ export const getPath = (navMesh: Graph<Vector2, number>, holes: Shape2[], start:
   const endId = end.join();
   const startToEnd: Line2 = [start, end];
   const canLinkStartToEnd = holes.map(toLines).flat().every(holeLine => {
-    return !getIntersection(startToEnd, holeLine);
+    const intersection = getIntersection(startToEnd, holeLine);
+    return !intersection || isSameVector2(intersection, start);
   });
 
   clone.addNode(startId, start);
