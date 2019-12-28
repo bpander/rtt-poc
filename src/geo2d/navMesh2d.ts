@@ -32,10 +32,11 @@ export const getNavMesh2d = (holes: Shape2[]): Graph<Vector2, number> => {
   while (true) {
     const hole = remainingHoles.pop();
     if (!hole) { break; }
+    const otherHoles = removeFirst(holes, hole);
     const angles = getAngles(hole);
-    remainingHoles.forEach(otherHole => {
-      const holeLines = removeFirst(remainingHoles, otherHole).map(toLines).flat();
-      getAngles(otherHole).forEach(holeAngle => {
+    remainingHoles.forEach(remainingHole => {
+      const holeLines = removeFirst(otherHoles, remainingHole).map(toLines).flat();
+      getAngles(remainingHole).forEach(holeAngle => {
         angles.forEach(angle => {
           const link = getLinkBetweenAngles(angle, holeAngle, holeLines);
           if (link) { links.push(link); }

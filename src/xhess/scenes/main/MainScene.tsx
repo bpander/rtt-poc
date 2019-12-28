@@ -48,19 +48,31 @@ const initialEntities: Entity[] = [
   },
   {
     id: 'box1',
-    position: [ 2, 2 ],
+    position: [ 14, 3 ],
     rotation: 0,
     facets: [
-      { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
+      { type: FacetType.SvgSprite, size: [ 4, 1 ], Component: Box },
       {
         type: FacetType.NavMeshHole,
-        shape: [ [ -0.5, -0.5 ], [ 2.5, -0.5 ], [ 2.5, 2.5 ], [ -0.5, 2.5 ] ],
+        shape: [ [ -0.5, -0.5 ], [ 4.5, -0.5 ], [ 4.5, 1.5 ], [ -0.5, 1.5 ] ],
       },
     ],
   },
   {
     id: 'box2',
-    position: [ 6, 2 ],
+    position: [ 14, 14 ],
+    rotation: 0,
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 4, 1 ], Component: Box },
+      {
+        type: FacetType.NavMeshHole,
+        shape: [ [ -0.5, -0.5 ], [ 4.5, -0.5 ], [ 4.5, 1.5 ], [ -0.5, 1.5 ] ],
+      },
+    ],
+  },
+  {
+    id: 'box3',
+    position: [ 15, 8 ],
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
