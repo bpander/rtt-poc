@@ -57,6 +57,14 @@ export const getNavMesh2d = (holes: Shape2[]): Graph<Vector2, number> => {
   return graph;
 };
 
+const rotateAngle = (angle: Angle, degrees: number): Angle => {
+  return {
+    p: angle.p,
+    thetaA: (angle.thetaA + degrees) % 360,
+    thetaB: (angle.thetaB + degrees) % 360,
+  };
+}
+
 const isInsideAngle = (angle: Angle, theta: number): boolean => {
   if (angle.thetaA > angle.thetaB) {
     return isBetween(theta, angle.thetaA, angle.thetaB);
@@ -74,7 +82,12 @@ const isInsideOrSameAngle = (angle: Angle, theta: number): boolean => {
 const getLinkBetweenAngles = (angle1: Angle, angle2: Angle, holeLines: Line2[]): Line2 | null => {
   const theta1 = getAngleBetweenPoints(angle1.p, angle2.p);
   const theta2 = getAngleBetweenPoints(angle2.p, angle1.p);
-  if (isInsideOrSameAngle(angle1, theta1) || isInsideOrSameAngle(angle2, theta2)) {
+  if (
+    isInsideOrSameAngle(angle1, theta1)
+    || isInsideOrSameAngle(angle2, theta2)
+    || isInsideAngle(rotateAngle(angle1, 180), theta1)
+    || isInsideAngle(rotateAngle(angle2, 180), theta2)
+  ) {
     return null;
   }
   const candidateLine = line(angle1.p, angle2.p);
