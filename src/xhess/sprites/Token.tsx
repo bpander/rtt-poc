@@ -4,7 +4,6 @@ import { scaleVector2 } from 'geo2d/core';
 import { useDispatch } from 'react-redux';
 import { useRootState } from 'root';
 import { updateXhess } from 'xhess/duck';
-import { removeFirst } from 'util/arrays';
 
 const originalSize = 512;
 
@@ -20,9 +19,7 @@ export const Token: React.FC<EntityComponentProps> = ({ facet, entity, children 
       return;
     }
     dispatch(updateXhess({
-      selected: isSelected
-        ? removeFirst(xhess.selected, entity.id)
-        : [ ...xhess.selected, entity.id ],
+      selected: isSelected ? [] : [ entity.id ],
     }));
   };
   const transform = useMemo(() => {
