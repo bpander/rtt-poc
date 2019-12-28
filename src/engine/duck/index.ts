@@ -13,6 +13,7 @@ export interface EngineState {
   height: number;
   camera: Camera;
   entities: Entity[];
+  navMesh: Shape2[];
 }
 
 const initialEngineState: EngineState = {
@@ -20,6 +21,7 @@ const initialEngineState: EngineState = {
   height: 0,
   camera: emptyCamera,
   entities: [],
+  navMesh: [],
 };
 
 const { reducer, update, configureAction } = createSlice(initialEngineState, 'ENGINE');
@@ -32,19 +34,23 @@ export const tick = configureAction<number>(
   elapsed => state => {
     const entities = state.entities.map(entity => {
       const agent = entity.facets.find(isFacetType(FacetType.NavMeshAgent));
-      if (!agent || !agent.destination) {
+      if (!agent) {
+        return entity;
+      }
+      const [ wayPoint, ...restOfPath ] = agent.path;
+      if (!wayPoint) {
         return entity;
       }
       const [ x1, y1 ] = entity.position;
-      const [ x2, y2 ] = agent.destination;
+      const [ x2, y2 ] = wayPoint;
       const angle = Math.atan2(y2 - y1, x2 - x1);
       const v = 3; // TODO: Make configurable somewhere
       const d = v * (elapsed / 1000);
       const movement: Vector2 = [ Math.cos(angle) * d, Math.sin(angle) * d ];
       const newPosition = addVector2(entity.position, movement);
-      if (areVectorsEqual(agent.destination, newPosition, 0.05)) {
-        const facets = removeFirst(entity.facets, agent, { ...agent, destination: null });
-        return { ...entity, position: agent.destination, facets };
+      if (areVectorsEqual(agent.path[0], newPosition, 0.05)) {
+        const facets = removeFirst(entity.facets, agent, { ...agent, path: restOfPath });
+        return { ...entity, position: wayPoint, facets };
       }
       return { ...entity, position: newPosition };
     });
@@ -52,13 +58,8 @@ export const tick = configureAction<number>(
   },
 );
 
-export const addEntities = configureAction<Entity[]>(
-  'ADD_ENTITIES',
-  entities => state => ({ ...state, entities: [ ...state.entities, ...entities ] }),
-);
-
 export const getNavMeshHoles = createSelector(
-  (engineState: EngineState) => engineState.entities,
+  (entities: Entity[]) => entities,
   entities => {
     const holes: Shape2[] = [];
     entities.forEach(entity => {
@@ -70,7 +71,7 @@ export const getNavMeshHoles = createSelector(
   },
 );
 
-export const getNavMesh = createSelector(
-  getNavMeshHoles,
-  holes => getNavMesh2d(holes),
+export const getNavMeshGraph = createSelector(
+  (engineState: EngineState) => engineState.navMesh,
+  navMesh => getNavMesh2d(navMesh),
 );

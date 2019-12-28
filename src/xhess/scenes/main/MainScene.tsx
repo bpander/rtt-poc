@@ -1,22 +1,12 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Grid } from 'engine/sprites/Grid';
-import { getPath, getLinks } from 'geo2d/navMesh2d';
-import { Vector2, Shape2 } from 'geo2d/core';
 import { FacetType, Entity } from 'engine/models/Entity';
 import { Tank } from 'xhess/sprites/Tank';
 import { Box } from 'xhess/sprites/Box';
 import { useDispatch } from 'react-redux';
-import { addEntities, getNavMesh } from 'engine/duck';
-import { useRootState } from 'root';
+import { updateEngine, getNavMeshHoles } from 'engine/duck';
 import { NavigableArea } from 'xhess/sprites/NavigableArea';
 import { updateXhess } from 'xhess/duck';
-
-const colliders: Shape2[] = [
-  [ [2, 2], [5, 2], [5, 3], [2, 3] ],
-  [ [2, 4], [8, 4], [8, 6], [2, 6] ],
-];
-
-const playerStart: Vector2 = [ 10, 8 ];
 
 const initialEntities: Entity[] = [
   {
@@ -41,7 +31,7 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Tank },
-      { type: FacetType.NavMeshAgent, destination: null },
+      { type: FacetType.NavMeshAgent, path: [] },
     ],
   },
   {
@@ -50,16 +40,21 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
-      { type: FacetType.NavMeshHole, shape: [ [ 0, 0 ], [ 2, 0 ], [ 2, 2 ], [ 0, 2 ] ] },
+      {
+        type: FacetType.NavMeshHole,
+        shape: [ [ -0.5, -0.5 ], [ 2.5, -0.5 ], [ 2.5, 2.5 ], [ -0.5, 2.5 ] ],
+      },
     ],
   },
 ];
 
 export const MainScene: React.FC = () => {
   const dispatch = useDispatch();
-  const { engine } = useRootState();
   useEffect(() => {
-    dispatch(addEntities(initialEntities));
+    dispatch(updateEngine({
+      entities: initialEntities,
+      navMesh: getNavMeshHoles(initialEntities),
+    }));
     dispatch(updateXhess({
       teams: [
         { color: 'blue', entities: [ 'player_tank' ] },
@@ -67,13 +62,13 @@ export const MainScene: React.FC = () => {
     }));
   }, [ dispatch ]);
 
-  const [destination, setDestination] = useState<Vector2>();
-  const navMesh = getNavMesh(engine);
-  const links = getLinks(navMesh);
+  // const [destination, setDestination] = useState<Vector2>();
+  // const navMesh = getNavMesh(engine);
+  // const links = getLinks(navMesh);
   // console.log(links);
-  const path = useMemo(() => {
-    return destination && getPath(navMesh, colliders, playerStart, destination);
-  }, [ destination, navMesh ]);
+  // const path = useMemo(() => {
+  //   return destination && getPath(navMesh, colliders, playerStart, destination);
+  // }, [ destination, navMesh ]);
   return null;
 
   // return (

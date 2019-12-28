@@ -126,7 +126,7 @@ export const getPath = (navMesh: Graph<Vector2, number>, holes: Shape2[], start:
     });
   });
   const pathfinder = aStar(clone, { distance: (_from, _to, link) => link.data });
-  return pathfinder.find(startId, endId).map(n => n.data);
+  return pathfinder.find(startId, endId).map(n => n.data).reverse().slice(1);
 };
 
 export const getLinks = (g: Graph): Line2[] => {

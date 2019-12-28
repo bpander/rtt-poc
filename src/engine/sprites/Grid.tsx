@@ -13,13 +13,15 @@ export const Grid: React.FC<EntityComponentProps> = () => {
   const numLongitudes = Math.floor(width);
 
   return (
-    <g stroke="#dddddd" strokeWidth={1 / scale}>
-      {times(numLatitudes, i => (
-        <line key={i} x1={0} y1={i} x2={width} y2={i} />
-      ))}
-      {times(numLongitudes, i => (
-        <line key={i} x1={i} y1={0} x2={i} y2={height} />
-      ))}
+    <g strokeWidth={1 / scale}>
+      <g stroke="#dddddd">
+        {times(numLatitudes, i => (
+          <line key={i} x1={0} y1={i} x2={width} y2={i} />
+        ))}
+        {times(numLongitudes, i => (
+          <line key={i} x1={i} y1={0} x2={i} y2={height} />
+        ))}
+      </g>
     </g>
   );
 };
