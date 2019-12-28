@@ -7,7 +7,7 @@ export enum FacetType {
   NavMeshAgent,
 }
 
-interface FacetBase {
+export interface FacetBase {
   type: FacetType;
 }
 

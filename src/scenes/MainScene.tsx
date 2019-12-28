@@ -1,17 +1,13 @@
-import React, { useState, useMemo, useContext, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Grid } from 'sprites/Grid';
-import { getLinks, getNavMesh2d, getPath } from 'geo2d/navMesh2d';
-import { Vector2, Line2, Shape2 } from 'geo2d/core';
-import { EngineContext } from 'engine/components/Engine';
-import { FacetType, Entity } from 'engine/models/Entity';
+import { getNavMesh2d, getPath } from 'geo2d/navMesh2d';
+import { Vector2, Shape2, scaleVector2 } from 'geo2d/core';
+import { FacetType, Entity, Facet, FacetMap, FacetBase } from 'engine/models/Entity';
 import { Tank } from 'sprites/Tank';
 import { Box } from 'sprites/Box';
-
-const scaleFactor = 50;
-
-const scaleVector2 = (v2: Vector2) => v2.map(n => n * scaleFactor) as Vector2;
-const descaleVector2 = (v2: Vector2) => v2.map(n => n / scaleFactor) as Vector2;
-const scaleLine2 = (line2: Line2) => line2.map(scaleVector2) as Line2;
+import { useDispatch } from 'react-redux';
+import { addEntities } from 'engine/duck';
+import { useRootState } from 'root';
 
 const colliders: Shape2[] = [
   [ [2, 2], [5, 2], [5, 3], [2, 3] ],
@@ -20,7 +16,26 @@ const colliders: Shape2[] = [
 
 const playerStart: Vector2 = [ 10, 8 ];
 
-const initialEntities: Entity[] = [
+enum ChessFacetType {
+  Team = 'Team',
+}
+
+interface TeamFacet {
+  type: ChessFacetType.Team;
+  name: string;
+}
+
+type ChessFacetMap = FacetMap & {
+  [ChessFacetType.Team]: TeamFacet;
+}
+
+type ValueOf<T> = T[keyof T];
+type ChessFacet = Facet | ValueOf<ChessFacetMap>;
+interface ChessEntity extends Entity {
+  chessFacets: ChessFacet[];
+}
+
+const initialEntities: ChessEntity[] = [
   {
     id: 'grid',
     position: [0, 0],
@@ -28,6 +43,7 @@ const initialEntities: Entity[] = [
     facets: [
       { type: FacetType.SvgSprite, size: [ 0, 0 ], Component: Grid },
     ],
+    chessFacets: [],
   },
   {
     id: 'player_tank',
@@ -37,25 +53,29 @@ const initialEntities: Entity[] = [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Tank },
       { type: FacetType.NavMeshAgent, destination: null },
     ],
+    chessFacets: [
+      { type: ChessFacetType.Team, name: '' },
+    ],
   },
   {
     id: 'box1',
     position: [ 2, 2 ],
     rotation: 0,
-    facets: [
-      { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
-    ],
+    facets: [],
+    chessFacets: [],
   },
 ];
 
 export const MainScene: React.FC = () => {
-  const ctx = useContext(EngineContext);
-  const { addEntity } = ctx;
-  useEffect(() => { initialEntities.forEach(addEntity); }, [ addEntity ]);
+  const dispatch = useDispatch();
+  const { camera } = useRootState('engine');
+  useEffect(() => {
+    dispatch(addEntities(initialEntities));
+  }, [ dispatch ]);
 
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
-    setDestination(descaleVector2([ e.clientX - left, e.clientY - top ]));
+    setDestination(scaleVector2([ e.clientX - left, e.clientY - top ], camera.scale));
   };
   const [destination, setDestination] = useState<Vector2>();
   const navMesh = useMemo(() => getNavMesh2d(colliders), []);

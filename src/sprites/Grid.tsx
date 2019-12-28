@@ -1,13 +1,14 @@
-import React, { useContext } from 'react';
-import { times } from 'util/arrays';
-import { EngineContext } from '../engine/components/Engine';
+import React from 'react';
+
 import { EntityComponentProps } from 'engine/models/Entity';
+import { times } from 'util/arrays';
+import { useRootState } from 'root';
 
 export const Grid: React.FC<EntityComponentProps> = () => {
-  const ctx = useContext(EngineContext);
-  const { scale } = ctx.camera;
-  const width = ctx.width / scale;
-  const height = ctx.height / scale;
+  const engine = useRootState('engine');
+  const { scale } = engine.camera;
+  const width = engine.width / scale;
+  const height = engine.height / scale;
   const numLatitudes = Math.floor(height);
   const numLongitudes = Math.floor(width);
 

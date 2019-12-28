@@ -5,6 +5,8 @@ export type Shape2 = Vector2[];
 
 export const TAU = Math.PI * 2;
 
+export const scaleVector2 = (v2: Vector2, scale: number) => v2.map(n => n * scale) as Vector2;
+
 export const getDistance = ([x1, y1]: Vector2, [x2, y2]: Vector2): number => {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 };

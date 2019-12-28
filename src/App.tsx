@@ -1,13 +1,25 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 
 import { Engine } from 'engine/components/Engine';
-import { MainScene } from 'scenes/MainScene';
 import { SvgRenderer } from 'engine/components/SvgRenderer';
+import { rootStore, useRootState } from 'root';
+import { MainScene } from 'scenes/MainScene';
+
+const GameComponent: React.FC = () => {
+  const engineState = useRootState('engine');
+
+  return (
+    <SvgRenderer engineState={engineState}>
+      <MainScene />
+    </SvgRenderer>
+  );
+};
 
 export const App: React.FC = () => {
   return (
-    <Engine width={800} height={450} renderer={SvgRenderer}>
-      <MainScene />
-    </Engine>
+    <Provider store={rootStore}>
+      <Engine Component={GameComponent} />
+    </Provider>
   );
 };
