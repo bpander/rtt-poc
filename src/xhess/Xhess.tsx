@@ -10,7 +10,7 @@ import { emptyCamera } from 'engine/models/Camera';
 const Renderer: React.FC = () => {
   useAnimationFrames();
   const { engine } = useRootState();
-  return <SvgRenderer engine={engine} />;
+  return <SvgRenderer engine={engine} debug={{ showGrid: true, showNavMesh: true, showPaths: true }} />;
 };
 
 export const Xhess: React.FC = () => {

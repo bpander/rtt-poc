@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Grid } from 'engine/sprites/Grid';
 import { FacetType, Entity } from 'engine/models/Entity';
 import { updateEngine, getNavMeshHoles } from 'engine/duck';
 import { Tank } from 'xhess/sprites/Tank';
@@ -16,14 +15,6 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 0, 0 ], Component: NavigableArea },
-    ],
-  },
-  {
-    id: 'grid',
-    position: [0, 0],
-    rotation: 0,
-    facets: [
-      { type: FacetType.SvgSprite, size: [ 0, 0 ], Component: Grid },
     ],
   },
   {

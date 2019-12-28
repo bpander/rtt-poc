@@ -2,6 +2,7 @@ import React from 'react';
 
 import { RendererProps } from './RendererProps';
 import { isFacetType, FacetType } from 'engine/models/Entity';
+import { SvgDebug } from './SvgDebug';
 
 export const SvgRenderer: React.FC<RendererProps> = props => {
   const { width, height, camera, entities } = props.engine;
@@ -18,6 +19,7 @@ export const SvgRenderer: React.FC<RendererProps> = props => {
       style={{ border: '1px solid black' }}
     >
       <g transform={cameraTransform}>
+        {props.debug && <SvgDebug {...props.debug} />}
         {entities.map(entity => {
           const svgSprite = entity.facets.find(isFacetType(FacetType.SvgSprite));
           if (!svgSprite) {
