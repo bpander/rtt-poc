@@ -22,7 +22,7 @@ const getAngles = (points: Vector2[]): Angle[] => {
 
 const line = (p1: Vector2, p2: Vector2): Line2 => [ p1, p2 ];
 
-const toLines = (shape: Shape2): Line2[] => {
+export const toLines = (shape: Shape2): Line2[] => {
   return shape.map((p, i) => line(p, shape[(i + 1) % shape.length]));
 };
 

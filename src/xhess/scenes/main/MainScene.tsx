@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Grid } from 'engine/sprites/Grid';
 import { FacetType, Entity } from 'engine/models/Entity';
+import { updateEngine, getNavMeshHoles } from 'engine/duck';
 import { Tank } from 'xhess/sprites/Tank';
 import { Box } from 'xhess/sprites/Box';
-import { useDispatch } from 'react-redux';
-import { updateEngine, getNavMeshHoles } from 'engine/duck';
 import { NavigableArea } from 'xhess/sprites/NavigableArea';
 import { updateXhess } from 'xhess/duck';
 
@@ -46,6 +47,18 @@ const initialEntities: Entity[] = [
       },
     ],
   },
+  {
+    id: 'box2',
+    position: [ 6, 2 ],
+    rotation: 0,
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
+      {
+        type: FacetType.NavMeshHole,
+        shape: [ [ -0.5, -0.5 ], [ 2.5, -0.5 ], [ 2.5, 2.5 ], [ -0.5, 2.5 ] ],
+      },
+    ],
+  },
 ];
 
 export const MainScene: React.FC = () => {
@@ -62,31 +75,5 @@ export const MainScene: React.FC = () => {
     }));
   }, [ dispatch ]);
 
-  // const [destination, setDestination] = useState<Vector2>();
-  // const navMesh = getNavMesh(engine);
-  // const links = getLinks(navMesh);
-  // console.log(links);
-  // const path = useMemo(() => {
-  //   return destination && getPath(navMesh, colliders, playerStart, destination);
-  // }, [ destination, navMesh ]);
   return null;
-
-  // return (
-  //   <g>
-  //     <g stroke="red">
-  //       {getLinks(navMesh).map(scaleLine2).map(([[x1, y1], [x2, y2]], i) => (
-  //         <line key={i} {...{x1, y1, x2, y2}} />
-  //       ))}
-  //     </g>
-  //     {path && path.map((v2, i) => {
-  //       const previous = path[i - 1];
-  //       if (!previous) {
-  //         return null;
-  //       }
-  //       const [ x1, y1 ] = scaleVector2(v2);
-  //       const [ x2, y2 ] = scaleVector2(previous);
-  //       return <line key={i} {...{ x1, y1, x2, y2 }} stroke="blue" strokeWidth="3" />;
-  //     })}
-  //   </g>
-  // )
 }
