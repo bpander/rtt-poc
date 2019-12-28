@@ -9,6 +9,8 @@ export const Tank: React.FC<EntityComponentProps> = ({ facet, entity }) => {
   const dispatch = useDispatch();
   const { xhess, engine } = useRootState();
   const isSelected = xhess.selected.includes(entity.id);
+  const team = xhess.teams.find(team => team.entities.includes(entity.id));
+  const color = team ? team.color : 'grey';
 
   return (
     <ellipse
@@ -16,7 +18,7 @@ export const Tank: React.FC<EntityComponentProps> = ({ facet, entity }) => {
       cy={0}
       rx={facet.size[0] / 2}
       ry={facet.size[1] / 2}
-      fill="blue"
+      fill={color}
       stroke={isSelected ? 'black' : 'none'}
       strokeWidth={3 / engine.camera.scale}
       onClick={() => {

@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { addEntities, getNavMesh } from 'engine/duck';
 import { useRootState } from 'root';
 import { NavigableArea } from 'xhess/sprites/NavigableArea';
+import { updateXhess } from 'xhess/duck';
 
 const colliders: Shape2[] = [
   [ [2, 2], [5, 2], [5, 3], [2, 3] ],
@@ -84,6 +85,11 @@ export const MainScene: React.FC = () => {
   const { engine } = useRootState();
   useEffect(() => {
     dispatch(addEntities(initialEntities));
+    dispatch(updateXhess({
+      teams: [
+        { color: 'blue', entities: [ 'player_tank' ] },
+      ],
+    }));
   }, [ dispatch ]);
 
   const [destination, setDestination] = useState<Vector2>();
