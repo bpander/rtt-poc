@@ -4,6 +4,7 @@ export enum FacetType {
   Collider,
   SvgSprite,
   Metadata,
+  NavMeshAgent,
 }
 
 interface FacetBase {
@@ -29,17 +30,23 @@ export interface MetadataFacet<T> extends FacetBase {
   data: T;
 }
 
+export interface NavMeshAgentFacet extends FacetBase {
+  type: FacetType.NavMeshAgent;
+  destination: Vector2 | null;
+}
+
 export type FacetMap = {
   [FacetType.Collider]: ColliderFacet;
   [FacetType.SvgSprite]: SvgSpriteFacet;
   [FacetType.Metadata]: MetadataFacet<any>;
+  [FacetType.NavMeshAgent]: NavMeshAgentFacet;
 }
 
 type ValueOf<T> = T[keyof T];
 export type Facet = ValueOf<FacetMap>;
 
 export const isFacetType = <T extends FacetType>(t: T) => (facet: Facet): facet is FacetMap[T] => {
-  return true;
+  return facet.type === t;
 };
 
 export interface Entity {

@@ -5,6 +5,7 @@ import { Vector2, Line2, Shape2 } from 'geo2d/core';
 import { EngineContext } from 'engine/components/Engine';
 import { FacetType, Entity } from 'engine/models/Entity';
 import { Tank } from 'sprites/Tank';
+import { Box } from 'sprites/Box';
 
 const scaleFactor = 50;
 
@@ -34,13 +35,22 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Tank },
+      { type: FacetType.NavMeshAgent, destination: null },
+    ],
+  },
+  {
+    id: 'box1',
+    position: [ 2, 2 ],
+    rotation: 0,
+    facets: [
+      { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
     ],
   },
 ];
 
 export const MainScene: React.FC = () => {
   const ctx = useContext(EngineContext);
-  const { addEntity } = ctx
+  const { addEntity } = ctx;
   useEffect(() => { initialEntities.forEach(addEntity); }, [ addEntity ]);
 
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
