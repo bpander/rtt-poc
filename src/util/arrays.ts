@@ -7,12 +7,16 @@ export const times = <T>(n: number, fn: (i: number) => T): T[] => {
   return arr;
 };
 
-export const removeFirst = <T>(haystack: T[], needle: T): T[] => {
+export const removeFirst = <T>(haystack: T[], needle: T, replacement?: T): T[] => {
   const index = haystack.indexOf(needle);
   if (index === -1) {
     return haystack;
   }
   const clone = [ ...haystack ];
-  clone.splice(index, 1);
+  if (replacement) {
+    clone.splice(index, 1, replacement);
+  } else {
+    clone.splice(index, 1);
+  }
   return clone;
 };

@@ -1,13 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Grid } from 'sprites/Grid';
+import { Grid } from 'engine/sprites/Grid';
 import { getPath, getLinks } from 'geo2d/navMesh2d';
 import { Vector2, Shape2, scaleVector2 } from 'geo2d/core';
 import { FacetType, Entity, Facet, FacetMap } from 'engine/models/Entity';
-import { Tank } from 'sprites/Tank';
-import { Box } from 'sprites/Box';
+import { Tank } from 'xhess/sprites/Tank';
+import { Box } from 'xhess/sprites/Box';
 import { useDispatch } from 'react-redux';
 import { addEntities, getNavMesh } from 'engine/duck';
 import { useRootState } from 'root';
+import { NavigableArea } from 'xhess/sprites/NavigableArea';
 
 const colliders: Shape2[] = [
   [ [2, 2], [5, 2], [5, 3], [2, 3] ],
@@ -41,26 +42,7 @@ const initialEntities: ChessEntity[] = [
     position: [ 0, 0 ],
     rotation: 0,
     facets: [
-      {
-        type: FacetType.SvgSprite,
-        size: [ 0, 0 ],
-        Component: () => {
-          const { width, height, camera } = useRootState('engine');
-          const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
-            const { left, top } = e.currentTarget.getBoundingClientRect();
-            const d = scaleVector2([ e.clientX - left, e.clientY - top ], 1 / camera.scale);
-            console.log(d);
-          };
-          return (
-              <rect
-                width={width}
-                height={height}
-                fill="rgba(0, 0, 0, 0)"
-                onClick={onAreaClick}
-              />
-          );
-        },
-      }
+      { type: FacetType.SvgSprite, size: [ 0, 0 ], Component: NavigableArea },
     ],
     chessFacets: [],
   },
@@ -99,15 +81,11 @@ const initialEntities: ChessEntity[] = [
 
 export const MainScene: React.FC = () => {
   const dispatch = useDispatch();
-  const engine = useRootState('engine');
+  const { engine } = useRootState();
   useEffect(() => {
     dispatch(addEntities(initialEntities));
   }, [ dispatch ]);
 
-  const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
-    const { left, top } = e.currentTarget.getBoundingClientRect();
-    setDestination(scaleVector2([ e.clientX - left, e.clientY - top ], engine.camera.scale));
-  };
   const [destination, setDestination] = useState<Vector2>();
   const navMesh = getNavMesh(engine);
   const links = getLinks(navMesh);

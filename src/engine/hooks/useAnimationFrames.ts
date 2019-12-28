@@ -1,13 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { tick } from 'engine/duck';
 
-import { tick } from '../duck';
-
-export interface EngineProps {
-  Component: React.ComponentType;
-}
-
-export const Engine: React.FC<EngineProps> = props => {
+export const useAnimationFrames = () => {
   const dispatch = useDispatch();
   const [ , forceUpdate ] = useState();
   useEffect(() => {
@@ -22,6 +17,4 @@ export const Engine: React.FC<EngineProps> = props => {
     id = requestAnimationFrame(onAnimationFrame);
     return () => cancelAnimationFrame(id);
   }, [ dispatch ]);
-
-  return <props.Component />;
 };

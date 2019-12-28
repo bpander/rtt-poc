@@ -1,25 +1,24 @@
-import { combineReducers, createStore, Reducer, CombinedState } from 'redux';
-import { useStore } from 'react-redux';
+import { combineReducers, createStore, Reducer, CombinedState, compose } from 'redux';
+import { useStore, TypedUseSelectorHook, useSelector } from 'react-redux';
 
-import { engineReducer, updateEngine } from 'engine/duck';
-import { emptyCamera } from 'engine/models/Camera';
+import { engineReducer } from 'engine/duck';
+import { xhessReducer } from 'xhess/duck';
 
 export const rootReducer = combineReducers({
   engine: engineReducer,
+  xhess: xhessReducer,
 });
 
 type ExtractState<TReducer> = TReducer extends Reducer<CombinedState<infer S>, any> ? S : never;
 export type RootState = ExtractState<typeof rootReducer>;
 
-export const rootStore = createStore(rootReducer);
+const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-rootStore.dispatch(updateEngine({
-  width: 800,
-  height: 450,
-  camera: { ...emptyCamera, scale: 25 },
-}));
+export const rootStore = createStore(rootReducer, composeEnhancers());
 
-export const useRootState = <K extends keyof RootState>(key: K): RootState[K] => {
+export const useRootState = (): RootState => {
   const store = useStore<RootState>();
-  return store.getState()[key];
+  return store.getState();
 };
+
+export const useRootSelector: TypedUseSelectorHook<RootState> = useSelector;

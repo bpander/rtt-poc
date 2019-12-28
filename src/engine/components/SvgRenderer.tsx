@@ -4,7 +4,7 @@ import { RendererProps } from './RendererProps';
 import { isFacetType, FacetType } from 'engine/models/Entity';
 
 export const SvgRenderer: React.FC<RendererProps> = props => {
-  const { width, height, camera, entities } = props.engineState;
+  const { width, height, camera, entities } = props.engine;
   const cameraTransform = [
     `scale(${camera.scale})`,
     `translate(${camera.position.join(' ')})`,

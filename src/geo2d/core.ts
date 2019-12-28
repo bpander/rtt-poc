@@ -11,6 +11,10 @@ export const addVector2 = ([ x1, y1 ]: Vector2, [ x2, y2 ]: Vector2): Vector2 =>
 
 export const scaleVector2 = (v2: Vector2, scale: number) => v2.map(n => n * scale) as Vector2;
 
+export const areVectorsEqual = ([ x1, y1 ]: Vector2, [ x2, y2 ]: Vector2, tolerance = 0): boolean => {
+  return Math.abs(x1 - x2) <= tolerance && Math.abs(y1 - y2) <= tolerance;
+};
+
 export const getDistance = ([x1, y1]: Vector2, [x2, y2]: Vector2): number => {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 };

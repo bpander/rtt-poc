@@ -5,7 +5,7 @@ import { times } from 'util/arrays';
 import { useRootState } from 'root';
 
 export const Grid: React.FC<EntityComponentProps> = () => {
-  const engine = useRootState('engine');
+  const { engine } = useRootState();
   const { scale } = engine.camera;
   const width = engine.width / scale;
   const height = engine.height / scale;

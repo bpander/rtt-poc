@@ -4,7 +4,7 @@ import { EntityComponentProps } from 'engine/models/Entity';
 import { useRootState } from 'root';
 
 export const Box: React.FC<EntityComponentProps> = ({ facet }) => {
-  const engine = useRootState('engine');
+  const { engine } = useRootState();
 
   return (
     <rect
