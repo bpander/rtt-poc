@@ -25,7 +25,7 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Rock },
-      { type: FacetType.NavMeshAgent, path: [] },
+      { type: FacetType.NavMeshAgent, path: [], velocity: 3 },
     ],
   },
   {
@@ -34,7 +34,7 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Paper },
-      { type: FacetType.NavMeshAgent, path: [] },
+      { type: FacetType.NavMeshAgent, path: [], velocity: 6 },
     ],
   },
   {
@@ -43,7 +43,7 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Scissors },
-      { type: FacetType.NavMeshAgent, path: [] },
+      { type: FacetType.NavMeshAgent, path: [], velocity: 9 },
     ],
   },
   {
@@ -52,7 +52,7 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Rock },
-      { type: FacetType.NavMeshAgent, path: [] },
+      { type: FacetType.NavMeshAgent, path: [], velocity: 3 },
     ],
   },
   {
@@ -61,7 +61,7 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Paper },
-      { type: FacetType.NavMeshAgent, path: [] },
+      { type: FacetType.NavMeshAgent, path: [], velocity: 6 },
     ],
   },
   {
@@ -70,7 +70,7 @@ const initialEntities: Entity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Scissors },
-      { type: FacetType.NavMeshAgent, path: [] },
+      { type: FacetType.NavMeshAgent, path: [], velocity: 12 },
     ],
   },
   {

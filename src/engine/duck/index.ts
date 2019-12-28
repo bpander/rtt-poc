@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-import { Shape2, addVector2, areVectorsEqual, Vector2 } from 'geo2d/core';
+import { Shape2, addVector2, Vector2, getDistance } from 'geo2d/core';
 import { getNavMesh2d } from 'geo2d/navMesh2d';
 import { createSlice } from 'lib/create-slice';
 
@@ -43,15 +43,15 @@ export const tick = configureAction<number>(
       }
       const [ x1, y1 ] = entity.position;
       const [ x2, y2 ] = wayPoint;
-      const angle = Math.atan2(y2 - y1, x2 - x1);
-      const v = 6; // TODO: Make configurable somewhere
-      const d = v * (elapsed / 1000);
-      const movement: Vector2 = [ Math.cos(angle) * d, Math.sin(angle) * d ];
-      const newPosition = addVector2(entity.position, movement);
-      if (areVectorsEqual(agent.path[0], newPosition, 0.05)) {
+      const d = agent.velocity * (elapsed / 1000);
+      const distanceToWayPoint = getDistance(entity.position, wayPoint);
+      if (distanceToWayPoint <= d) {
         const facets = removeFirst(entity.facets, agent, { ...agent, path: restOfPath });
         return { ...entity, position: wayPoint, facets };
       }
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      const movement: Vector2 = [ Math.cos(angle) * d, Math.sin(angle) * d ];
+      const newPosition = addVector2(entity.position, movement);
       return { ...entity, position: newPosition };
     });
     return { ...state, entities };

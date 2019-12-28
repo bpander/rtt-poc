@@ -27,6 +27,7 @@ export interface SvgSpriteFacet extends FacetBase {
 export interface NavMeshAgentFacet extends FacetBase {
   type: FacetType.NavMeshAgent;
   path: Vector2[];
+  velocity: number;
 }
 
 export interface NavMeshHoleFacet extends FacetBase {
