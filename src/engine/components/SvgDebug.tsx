@@ -33,7 +33,7 @@ const DebugNavMesh: React.FC = () => {
   const links = getLinks(navMeshGraph);
 
   return (
-    <g stroke="red">
+    <g stroke="rgba(255, 0, 0, 0.2)">
       {links.map(([ [ x1, y1 ], [ x2, y2 ] ], i) => (
         <line key={i} {...{x1, y1, x2, y2}} />
       ))}
