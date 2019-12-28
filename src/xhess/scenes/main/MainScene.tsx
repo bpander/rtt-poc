@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Grid } from 'engine/sprites/Grid';
 import { getPath, getLinks } from 'geo2d/navMesh2d';
-import { Vector2, Shape2, scaleVector2 } from 'geo2d/core';
-import { FacetType, Entity, Facet, FacetMap } from 'engine/models/Entity';
+import { Vector2, Shape2 } from 'geo2d/core';
+import { FacetType, Entity } from 'engine/models/Entity';
 import { Tank } from 'xhess/sprites/Tank';
 import { Box } from 'xhess/sprites/Box';
 import { useDispatch } from 'react-redux';
@@ -18,26 +18,7 @@ const colliders: Shape2[] = [
 
 const playerStart: Vector2 = [ 10, 8 ];
 
-enum ChessFacetType {
-  Team = 'Team',
-}
-
-interface TeamFacet {
-  type: ChessFacetType.Team;
-  name: string;
-}
-
-type ChessFacetMap = FacetMap & {
-  [ChessFacetType.Team]: TeamFacet;
-}
-
-type ValueOf<T> = T[keyof T];
-type ChessFacet = Facet | ValueOf<ChessFacetMap>;
-interface ChessEntity extends Entity {
-  chessFacets: ChessFacet[];
-}
-
-const initialEntities: ChessEntity[] = [
+const initialEntities: Entity[] = [
   {
     id: 'navigable_area',
     position: [ 0, 0 ],
@@ -45,7 +26,6 @@ const initialEntities: ChessEntity[] = [
     facets: [
       { type: FacetType.SvgSprite, size: [ 0, 0 ], Component: NavigableArea },
     ],
-    chessFacets: [],
   },
   {
     id: 'grid',
@@ -54,7 +34,6 @@ const initialEntities: ChessEntity[] = [
     facets: [
       { type: FacetType.SvgSprite, size: [ 0, 0 ], Component: Grid },
     ],
-    chessFacets: [],
   },
   {
     id: 'player_tank',
@@ -63,9 +42,6 @@ const initialEntities: ChessEntity[] = [
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Tank },
       { type: FacetType.NavMeshAgent, destination: null },
-    ],
-    chessFacets: [
-      { type: ChessFacetType.Team, name: '' },
     ],
   },
   {
@@ -76,7 +52,6 @@ const initialEntities: ChessEntity[] = [
       { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
       { type: FacetType.NavMeshHole, shape: [ [ 0, 0 ], [ 2, 0 ], [ 2, 2 ], [ 0, 2 ] ] },
     ],
-    chessFacets: [],
   },
 ];
 
