@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-import { Shape2, addVector2, areVectorsEqual, getAngleBetweenPoints, Vector2 } from 'geo2d/core';
+import { Shape2, addVector2, areVectorsEqual, Vector2 } from 'geo2d/core';
 import { getNavMesh2d } from 'geo2d/navMesh2d';
 import { createSlice } from 'lib/create-slice';
 

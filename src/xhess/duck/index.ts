@@ -5,8 +5,9 @@ interface XhessState {
 }
 
 const initialXhessState: XhessState = {
-  selected: [ 'player_tank' ],
+  selected: [],
 };
 
-const { reducer } = createSlice(initialXhessState, 'XHESS');
+const { reducer, update } = createSlice(initialXhessState, 'XHESS');
 export const xhessReducer = reducer;
+export const updateXhess = update;
