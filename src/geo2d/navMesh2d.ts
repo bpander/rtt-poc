@@ -81,7 +81,8 @@ export const findNavMeshLinks = (corners: Corner[]): Line2[] => {
         if (!intersection) {
           return true;
         }
-        return isSameVector2(intersection, possibleLink[0]) || isSameVector2(intersection, possibleLink[1]);
+        return isSameVector2(intersection, possibleCollision.lineB[1])
+          || isSameVector2(intersection, possibleCollision.lineB[0]);
       });
       if (isValid) { links.push(possibleLink); }
     });
