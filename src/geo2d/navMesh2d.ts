@@ -22,10 +22,10 @@ export interface Corner {
 
 const isInsideOrSameAngle2 = (angle: number, thetaA: number, thetaB: number) => {
   if (thetaA < thetaB) {
-    return isSameOrBetween(angle, thetaA, thetaB);
+    return angle >= thetaA && angle <= thetaB;
   }
-  return !isBetween(angle, thetaA, thetaB);
-}
+  return angle >= thetaA || angle <= thetaB;
+};
 
 const isInsideAngle2 = (angle: number, thetaA: number, thetaB: number) => {
   if (thetaA < thetaB) {
@@ -62,9 +62,13 @@ export const findNavMeshLinks = (corners: Corner[]): Line2[] => {
     if (!corner) { break; }
     const otherCorners = removeFirst(corners, corner);
     remainingCorners.forEach(remainingCorner => {
+      if (isSameVector2(corner.p, remainingCorner.p)) {
+        return;
+      }
       const possibleLink: Line2 = [ corner.p, remainingCorner.p ];
       const angle = getAngleBetweenPoints(...possibleLink);
       const angleFlipped = (angle + 180) % 360;
+
       if ((
         !isInsideOrSameAngle2(angle, corner.thetaAInverse, corner.thetaB)
         && !isInsideOrSameAngle2(angle, corner.thetaA, corner.thetaBInverse)
@@ -76,13 +80,14 @@ export const findNavMeshLinks = (corners: Corner[]): Line2[] => {
       }
       const possibleCollisions = removeFirst(otherCorners, remainingCorner);
 
-      const isValid = possibleCollisions.every(possibleCollision => {
-        const intersection = getIntersection(possibleLink, possibleCollision.lineB);
+      const isValid = possibleCollisions.every(({ lineB }) => {
+        const intersection = getIntersection(possibleLink, lineB);
         if (!intersection) {
           return true;
         }
-        return isSameVector2(intersection, possibleCollision.lineB[1])
-          || isSameVector2(intersection, possibleCollision.lineB[0]);
+
+        return (isSameVector2(intersection, possibleLink[0]) || isSameVector2(intersection, possibleLink[1]))
+          && (isSameVector2(intersection, lineB[0]) || isSameVector2(intersection, lineB[1]));
       });
       if (isValid) { links.push(possibleLink); }
     });
