@@ -9,6 +9,7 @@ import { Scissors } from 'xhess/sprites/Scissors';
 import { Box } from 'xhess/sprites/Box';
 import { NavigableArea } from 'xhess/sprites/NavigableArea';
 import { updateXhess } from 'xhess/duck';
+import { getEdges } from 'geo2d/navMesh2d';
 
 const initialEntities: Entity[] = [
   {
@@ -164,7 +165,7 @@ export const MainScene: React.FC = () => {
   useEffect(() => {
     dispatch(updateEngine({
       entities: initialEntities,
-      navMesh: getNavMeshHoles(initialEntities),
+      navMesh: getEdges(getNavMeshHoles(initialEntities)),
     }));
     dispatch(updateXhess({
       teams: [

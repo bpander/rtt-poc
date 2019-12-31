@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { Shape2, addVector2, Vector2, getDistance } from 'geo2d/core';
-import { getNavMesh2d } from 'geo2d/navMesh2d';
+import { getNavMesh2d, Edge } from 'geo2d/navMesh2d';
 import { createSlice } from 'lib/create-slice';
 
 import { Camera, emptyCamera } from '../models/Camera';
@@ -13,7 +13,7 @@ export interface EngineState {
   height: number;
   camera: Camera;
   entities: Entity[];
-  navMesh: Shape2[];
+  navMesh: Edge[];
 }
 
 const initialEngineState: EngineState = {
