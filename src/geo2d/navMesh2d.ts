@@ -1,6 +1,6 @@
-import { getAngleBetweenPoints, Vector2, Line2, Shape2, getIntersection, getDistance, isSameVector2, doLinesIntersect } from './core';
-import { isSameOrBetween, isBetween } from 'util/numbers';
-import createGraph, { Graph, Link } from 'ngraph.graph';
+import { getAngleBetweenPoints, Vector2, Line2, Shape2, getIntersection, getDistance, isSameVector2 } from './core';
+import { isBetween } from 'util/numbers';
+import createGraph, { Graph } from 'ngraph.graph';
 import { aStar } from 'ngraph.path';
 import { removeFirst } from 'util/arrays';
 
@@ -11,85 +11,93 @@ interface Angle {
   // normal: number;
 }
 
-export interface Corner {
-  p: Vector2;
-  thetaA: number;
-  thetaAInverse: number;
-  thetaB: number;
-  thetaBInverse: number;
-  lineB: Line2;
-}
-
-const isInsideOrSameAngle2 = (angle: number, thetaA: number, thetaB: number) => {
+export const isInsideOrSameAngle = (angle: number, thetaA: number, thetaB: number) => {
   if (thetaA < thetaB) {
     return angle >= thetaA && angle <= thetaB;
   }
   return angle >= thetaA || angle <= thetaB;
 };
 
-const isInsideAngle2 = (angle: number, thetaA: number, thetaB: number) => {
-  if (thetaA < thetaB) {
-    return isBetween(angle, thetaA, thetaB);
-  }
-  return !isBetween(angle, thetaA, thetaB);
-};
+interface Edge {
+  line: Line2;
+  angle: number;
+  angleOpposite: number;
+  corners: [ Corner, Corner ];
+}
 
-export const getCorners = (shapes: Shape2[]): Corner[] => {
-  return shapes.map(shape => {
-    return shape.map((p, i) => {
-      const a = shape[(i + shape.length - 1) % shape.length];
+interface Corner {
+  p: Vector2;
+  thetaA: number;
+  thetaAOpposite: number;
+  thetaB: number;
+  thetaBOpposite: number;
+}
+
+export const getEdges = (shapes: Shape2[]): Edge[] => {
+  const shapeEdges = shapes.map(shape => {
+    return shape.map((v2, i) => {
+      const a = shape[(i - 1 + shape.length) % shape.length];
       const b = shape[(i + 1) % shape.length];
-      const thetaA = getAngleBetweenPoints(p, a);
-      const thetaB = getAngleBetweenPoints(p, b);
-      const corner: Corner = {
-        p,
-        thetaA,
-        thetaAInverse: (thetaA + 180) % 360,
-        thetaB,
-        thetaBInverse: (thetaB + 180) % 360,
-        lineB: [ p, b ],
+      const c = shape[(i + 2) % shape.length];
+      const line: Line2 = [ v2, b ];
+      const angle = getAngleBetweenPoints(...line);
+      const angleOpposite = (angle + 180) % 360;
+      const edge: Edge = {
+        line,
+        angle,
+        angleOpposite,
+        corners: [
+          {
+            p: v2,
+            thetaA: getAngleBetweenPoints(a, v2),
+            thetaAOpposite: getAngleBetweenPoints(v2, a),
+            thetaB: angle,
+            thetaBOpposite: angleOpposite,
+          },
+          {
+            p: b,
+            thetaA: angle,
+            thetaAOpposite: angleOpposite,
+            thetaB: getAngleBetweenPoints(b, c),
+            thetaBOpposite: getAngleBetweenPoints(c, b),
+          },
+        ],
       };
-      return corner;
+      return edge;
     });
-  }).flat();
+  });
+  return shapeEdges.flat();
 };
 
-export const findNavMeshLinks = (corners: Corner[]): Line2[] => {
+export const findNavMeshLinks = (holes: Shape2[]): Line2[] => {
   const links: Line2[] = [];
-  const remainingCorners = [ ...corners ];
+  const edges = getEdges(holes);
+  const remainingEdges = [ ...edges ];
   while (true) {
-    const corner = remainingCorners.pop();
-    if (!corner) { break; }
-    const otherCorners = removeFirst(corners, corner);
-    remainingCorners.forEach(remainingCorner => {
-      if (isSameVector2(corner.p, remainingCorner.p)) {
-        return;
-      }
-      const possibleLink: Line2 = [ corner.p, remainingCorner.p ];
-      const angle = getAngleBetweenPoints(...possibleLink);
-      const angleFlipped = (angle + 180) % 360;
-
-      if ((
-        !isInsideOrSameAngle2(angle, corner.thetaAInverse, corner.thetaB)
-        && !isInsideOrSameAngle2(angle, corner.thetaA, corner.thetaBInverse)
-      ) || (
-        !isInsideOrSameAngle2(angleFlipped, remainingCorner.thetaAInverse, remainingCorner.thetaB)
-        && !isInsideOrSameAngle2(angleFlipped, remainingCorner.thetaA, remainingCorner.thetaBInverse)
-      )) {
-        return;
-      }
-      const possibleCollisions = removeFirst(otherCorners, remainingCorner);
-
-      const isValid = possibleCollisions.every(({ lineB }) => {
-        const intersection = getIntersection(possibleLink, lineB);
+    const edge = remainingEdges.pop();
+    if (!edge) { break; }
+    const otherEdges = removeFirst(edges, edge);
+    remainingEdges.forEach(remainingEdge => {
+      const candidateLink: Line2 = [ edge.line[0], remainingEdge.line[0] ];
+      const angle = getAngleBetweenPoints(...candidateLink);
+      const canLink = otherEdges.every(possibleCollision => {
+        const intersection = getIntersection(candidateLink, possibleCollision.line);
         if (!intersection) {
           return true;
         }
-
-        return (isSameVector2(intersection, possibleLink[0]) || isSameVector2(intersection, possibleLink[1]))
-          && (isSameVector2(intersection, lineB[0]) || isSameVector2(intersection, lineB[1]));
+        if (!isSameVector2(intersection, candidateLink[0]) && !isSameVector2(intersection, candidateLink[1])) {
+          return false;
+        }
+        const intersectedCorner = possibleCollision.corners.find(c => isSameVector2(c.p, intersection));
+        if (!intersectedCorner) {
+          return false;
+        }
+        return (
+          isInsideOrSameAngle(angle, intersectedCorner.thetaA, intersectedCorner.thetaB)
+          || isInsideOrSameAngle(angle, intersectedCorner.thetaAOpposite, intersectedCorner.thetaBOpposite)
+        );
       });
-      if (isValid) { links.push(possibleLink); }
+      if (canLink) { links.push(candidateLink); }
     });
   }
   return links;
@@ -112,25 +120,8 @@ export const toLines = (shape: Shape2): Line2[] => {
 };
 
 export const getNavMesh2d = (holes: Shape2[]): Graph<Vector2, number> => {
-  const links: Line2[] = holes.map(toLines).flat();
-  const remainingHoles = [ ...holes ];
-  while (true) {
-    const hole = remainingHoles.pop();
-    if (!hole) { break; }
-    const otherHoles = removeFirst(holes, hole);
-    const angles = getAngles(hole);
-    remainingHoles.forEach(remainingHole => {
-      const holeLines = removeFirst(otherHoles, remainingHole).map(toLines).flat();
-      getAngles(remainingHole).forEach(holeAngle => {
-        angles.forEach(angle => {
-          const link = getLinkBetweenAngles(angle, holeAngle, holeLines);
-          if (link) { links.push(link); }
-        });
-      });
-    });
-  }
-
   const graph = createGraph<Vector2, number>();
+  const links = findNavMeshLinks(holes);
   links.forEach(([ p1, p2 ]) => {
     const p1Id = p1.join();
     const p2Id = p2.join();
@@ -142,44 +133,11 @@ export const getNavMesh2d = (holes: Shape2[]): Graph<Vector2, number> => {
   return graph;
 };
 
-const rotateAngle = (angle: Angle, degrees: number): Angle => {
-  return {
-    p: angle.p,
-    thetaA: (angle.thetaA + degrees) % 360,
-    thetaB: (angle.thetaB + degrees) % 360,
-  };
-}
-
 const isInsideAngle = (angle: Angle, theta: number): boolean => {
   if (angle.thetaA > angle.thetaB) {
     return isBetween(theta, angle.thetaA, angle.thetaB);
   }
   return !isBetween(theta, angle.thetaA, angle.thetaB);
-};
-
-const isInsideOrSameAngle = (angle: Angle, theta: number): boolean => {
-  if (angle.thetaA > angle.thetaB) {
-    return isSameOrBetween(theta, angle.thetaA, angle.thetaB);
-  }
-  return !isBetween(theta, angle.thetaA, angle.thetaB);
-};
-
-const getLinkBetweenAngles = (angle1: Angle, angle2: Angle, holeLines: Line2[]): Line2 | null => {
-  const theta1 = getAngleBetweenPoints(angle1.p, angle2.p);
-  const theta2 = getAngleBetweenPoints(angle2.p, angle1.p);
-  if (
-    isInsideOrSameAngle(angle1, theta1)
-    || isInsideOrSameAngle(angle2, theta2)
-    || isInsideAngle(rotateAngle(angle1, 180), theta1)
-    || isInsideAngle(rotateAngle(angle2, 180), theta2)
-  ) {
-    return null;
-  }
-  const candidateLine = line(angle1.p, angle2.p);
-  if (holeLines.some(holeLine => getIntersection(candidateLine, holeLine))) {
-    return null;
-  }
-  return candidateLine;
 };
 
 const getLinkToPoint = (angle: Angle, p: Vector2, holeLines: Line2[]): Line2 | null => {
@@ -234,10 +192,4 @@ export const getPath = (navMesh: Graph<Vector2, number>, holes: Shape2[], start:
   });
   const pathfinder = aStar(clone, { distance: (_from, _to, link) => link.data });
   return pathfinder.find(startId, endId).map(n => n.data).reverse().slice(1);
-};
-
-export const getLinks = (g: Graph): Line2[] => {
-  const links: Link<number>[] = [];
-  g.forEachLink(l => links.push(l));
-  return links.map(link => [ g.getNode(link.fromId)!.data, g.getNode(link.toId)!.data ]);
 };

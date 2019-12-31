@@ -3,8 +3,7 @@ import React, { useMemo } from 'react';
 import { isFacetType, FacetType } from 'engine/models/Entity';
 import { times } from 'util/arrays';
 import { useRootState } from 'root';
-import { getNavMeshGraph } from 'engine/duck';
-import { getLinks, toLines, findNavMeshLinks } from 'geo2d/navMesh2d';
+import { toLines, findNavMeshLinks } from 'geo2d/navMesh2d';
 import { DebugProps } from './RendererProps';
 
 const DebugGrid: React.FC = () => {
@@ -29,9 +28,7 @@ const DebugGrid: React.FC = () => {
 
 const DebugNavMesh: React.FC = () => {
   const { engine } = useRootState();
-  const links = useMemo(() => findNavMeshLinks(engine.corners), [ engine.corners ]);
-  // const navMeshGraph = getNavMeshGraph(engine);
-  // const links = getLinks(navMeshGraph);
+  const links = useMemo(() => findNavMeshLinks(engine.navMesh), [ engine.navMesh ]);
 
   return (
     <g stroke="rgba(255, 0, 0, 0.3)">
