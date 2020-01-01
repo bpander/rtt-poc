@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { EntityComponentProps } from 'engine/models/Entity';
-import { scaleVector2 } from 'geo2d/core';
+import { EntityComponentProps } from 'modules/engine/models/Entity';
+import { scaleVector2 } from 'modules/geo2d/core';
 import { useDispatch } from 'react-redux';
 import { useRootState } from 'root';
 import { updateXhess } from 'xhess/duck';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { EntityComponentProps } from 'engine/models/Entity';
+import { EntityComponentProps } from 'modules/engine/models/Entity';
 import { useRootState } from 'root';
 
 export const Box: React.FC<EntityComponentProps> = ({ facet }) => {

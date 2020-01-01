@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { RendererProps } from './RendererProps';
-import { isFacetType, FacetType } from 'engine/models/Entity';
+import { isFacetType, FacetType } from '../models/Entity';
 import { SvgDebug } from './SvgDebug';
 
 export const SvgRenderer: React.FC<RendererProps> = props => {

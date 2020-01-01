@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { MainScene } from './scenes/main/MainScene';
-import { SvgRenderer } from 'engine/components/SvgRenderer';
-import { useAnimationFrames } from 'engine/hooks/useAnimationFrames';
+import { SvgRenderer } from 'modules/engine/components/SvgRenderer';
+import { useAnimationFrames } from 'modules/engine/hooks/useAnimationFrames';
 import { useRootState, rootStore } from 'root';
 import { Provider } from 'react-redux';
-import { updateEngine } from 'engine/duck';
-import { emptyCamera } from 'engine/models/Camera';
+import { updateEngine } from 'modules/engine/duck';
+import { emptyCamera } from 'modules/engine/models/Camera';
 
 const Renderer: React.FC = () => {
   useAnimationFrames();

@@ -1,4 +1,4 @@
-import { Vector2 } from 'geo2d/core';
+import { Vector2 } from 'modules/geo2d/core';
 
 export interface Camera {
   position: Vector2;

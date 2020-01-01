@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 
-import { isFacetType, FacetType } from 'engine/models/Entity';
 import { times } from 'util/arrays';
 import { useRootState } from 'root';
-import { findNavMeshLinks } from 'geo2d/navMesh2d';
-import { toLines } from 'geo2d/core';
+import { findNavMeshLinks } from 'modules/geo2d/navMesh2d';
+import { toLines } from 'modules/geo2d/core';
+
+import { isFacetType, FacetType } from '../models/Entity';
 import { DebugProps } from './RendererProps';
 
 const DebugGrid: React.FC = () => {

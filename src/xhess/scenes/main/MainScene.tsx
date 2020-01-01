@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { FacetType, Entity } from 'engine/models/Entity';
-import { updateEngine, getNavMeshHoles } from 'engine/duck';
+import { FacetType, Entity } from 'modules/engine/models/Entity';
+import { updateEngine, getNavMeshHoles } from 'modules/engine/duck';
 import { Rock } from 'xhess/sprites/Rock';
 import { Paper } from 'xhess/sprites/Paper';
 import { Scissors } from 'xhess/sprites/Scissors';
 import { Box } from 'xhess/sprites/Box';
 import { NavigableArea } from 'xhess/sprites/NavigableArea';
 import { updateXhess } from 'xhess/duck';
-import { getEdges } from 'geo2d/navMesh2d';
+import { getEdges } from 'modules/geo2d/navMesh2d';
 
 const initialEntities: Entity[] = [
   {

@@ -1,4 +1,4 @@
-import { createSlice } from 'lib/create-slice';
+import { createSlice } from 'modules/create-slice';
 
 interface Team {
   name: string;

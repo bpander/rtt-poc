@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect';
 
-import { Shape2, addVector2, Vector2, getDistance } from 'geo2d/core';
-import { getNavMesh2d, Edge } from 'geo2d/navMesh2d';
-import { createSlice } from 'lib/create-slice';
+import { Shape2, addVector2, Vector2, getDistance } from 'modules/geo2d/core';
+import { getNavMesh2d, Edge } from 'modules/geo2d/navMesh2d';
+import { createSlice } from 'modules/create-slice';
 
 import { Camera, emptyCamera } from '../models/Camera';
 import { Entity, isFacetType, FacetType } from '../models/Entity';

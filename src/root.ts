@@ -1,7 +1,7 @@
 import { combineReducers, createStore, Reducer, CombinedState, compose } from 'redux';
 import { useStore, TypedUseSelectorHook, useSelector } from 'react-redux';
 
-import { engineReducer } from 'engine/duck';
+import { engineReducer } from 'modules/engine/duck';
 import { xhessReducer } from 'xhess/duck';
 
 export const rootReducer = combineReducers({

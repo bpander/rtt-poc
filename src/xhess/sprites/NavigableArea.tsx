@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { useRootState } from 'root';
-import { scaleVector2, Vector2 } from 'geo2d/core';
+import { scaleVector2, Vector2 } from 'modules/geo2d/core';
 import { useDispatch } from 'react-redux';
-import { updateEngine, getNavMeshGraph } from 'engine/duck';
-import { isFacetType, FacetType } from 'engine/models/Entity';
+import { updateEngine, getNavMeshGraph } from 'modules/engine/duck';
+import { isFacetType, FacetType } from 'modules/engine/models/Entity';
 import { removeFirst } from 'util/arrays';
-import { getPath } from 'geo2d/navMesh2d';
+import { getPath } from 'modules/geo2d/navMesh2d';
 
 export const NavigableArea: React.FC = () => {
   const dispatch = useDispatch();

@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { useState, useEffect } from 'react';
-import { tick } from 'engine/duck';
+
+import { tick } from '../duck';
 
 export const useAnimationFrames = () => {
   const dispatch = useDispatch();
