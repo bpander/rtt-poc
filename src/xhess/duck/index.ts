@@ -13,7 +13,7 @@ interface XhessState {
 }
 
 const initialXhessState: XhessState = {
-  selected: [],
+  selected: [ 'player_scissors' ],
   teams: [],
   playerTeam: 'blue',
 };

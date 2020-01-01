@@ -40,7 +40,7 @@ const initialEntities: Entity[] = [
   },
   {
     id: 'player_scissors',
-    position: [ 18, 16 ],
+    position: [ 2.5, 1.5 ],
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Scissors },
@@ -76,79 +76,67 @@ const initialEntities: Entity[] = [
   },
   {
     id: 'box1',
-    position: [ 14, 3 ],
+    position: [ 2, 2 ],
     rotation: 0,
     facets: [
-      { type: FacetType.SvgSprite, size: [ 4, 1 ], Component: Box },
+      { type: FacetType.SvgSprite, size: [ 7, 1 ], Component: Box },
       {
         type: FacetType.NavMeshHole,
-        shape: [ [ -0.5, -0.5 ], [ 4.5, -0.5 ], [ 4.5, 1.5 ], [ -0.5, 1.5 ] ],
+        shape: [ [ -0.5, -0.5 ], [ 7.5, -0.5 ], [ 7.5, 1.5 ], [ -0.5, 1.5 ] ],
       },
     ],
   },
   {
     id: 'box2',
-    position: [ 14, 14 ],
+    position: [ 2, 3 ],
     rotation: 0,
     facets: [
-      { type: FacetType.SvgSprite, size: [ 4, 1 ], Component: Box },
+      { type: FacetType.SvgSprite, size: [ 1, 4 ], Component: Box },
       {
         type: FacetType.NavMeshHole,
-        shape: [ [ -0.5, -0.5 ], [ 4.5, -0.5 ], [ 4.5, 1.5 ], [ -0.5, 1.5 ] ],
+        shape: [ [ -0.5, -0.5 ], [ 1.5, -0.5 ], [ 1.5, 4.5 ], [ -0.5, 4.5 ] ],
       },
     ],
   },
   {
     id: 'box3',
-    position: [ 15, 8 ],
+    position: [ 4, 3 ],
     rotation: 0,
     facets: [
-      { type: FacetType.SvgSprite, size: [ 2, 2 ], Component: Box },
+      { type: FacetType.SvgSprite, size: [ 1, 5 ], Component: Box },
       {
         type: FacetType.NavMeshHole,
-        shape: [ [ -0.5, -0.5 ], [ 2.5, -0.5 ], [ 2.5, 2.5 ], [ -0.5, 2.5 ] ],
+        shape: [ [ -0.5, -0.5 ], [ 1.5, -0.5 ], [ 1.5, 5.5 ], [ -0.5, 5.5 ] ],
       },
     ],
   },
   {
     id: 'box4',
-    position: [ 4, 4 ],
+    position: [ 5, 6 ],
     rotation: 0,
     facets: [
-      { type: FacetType.SvgSprite, size: [ 1, 4 ], Component: Box },
+      { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Box },
       {
         type: FacetType.NavMeshHole,
-        shape: [ [ -0.5, -0.5 ], [ 1.5, -0.5 ], [ 1.5, 4.5 ], [ -0.5, 4.5 ] ],
+        shape: [ [ -0.5, -0.5 ], [ 1.5, -0.5 ], [ 1.5, 1.5 ], [ -0.5, 1.5 ] ],
       },
     ],
   },
   {
     id: 'box5',
-    position: [ 4, 10 ],
+    position: [ 8, 6 ],
     rotation: 0,
     facets: [
-      { type: FacetType.SvgSprite, size: [ 1, 4 ], Component: Box },
+      { type: FacetType.SvgSprite, size: [ 1, 1 ], Component: Box },
       {
         type: FacetType.NavMeshHole,
-        shape: [ [ -0.5, -0.5 ], [ 1.5, -0.5 ], [ 1.5, 4.5 ], [ -0.5, 4.5 ] ],
+        shape: [ [ -0.5, -0.5 ], [ 1.5, -0.5 ], [ 1.5, 1.5 ], [ -0.5, 1.5 ] ],
       },
     ],
   },
   {
     id: 'box6',
-    position: [ 27, 4 ],
-    rotation: 0,
-    facets: [
-      { type: FacetType.SvgSprite, size: [ 1, 4 ], Component: Box },
-      {
-        type: FacetType.NavMeshHole,
-        shape: [ [ -0.5, -0.5 ], [ 1.5, -0.5 ], [ 1.5, 4.5 ], [ -0.5, 4.5 ] ],
-      },
-    ],
-  },
-  {
-    id: 'box7',
-    position: [ 27, 10 ],
+    position: [ 9, 3 ],
     rotation: 0,
     facets: [
       { type: FacetType.SvgSprite, size: [ 1, 4 ], Component: Box },
