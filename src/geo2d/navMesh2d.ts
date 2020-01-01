@@ -105,7 +105,7 @@ const cloneMesh = (navMesh: Graph<Vector2, number>) => {
   return g;
 };
 
-const isValidLink = (candidateLink: Line2, edges: Edge[]): boolean => {
+const isValidLink = (candidateLink: Line2, edges: Edge[], allowNonOptimalPaths?: boolean): boolean => {
   const angle = getAngleBetweenPoints(...candidateLink);
   return edges.every(possibleCollision => {
     const intersection = getIntersection(candidateLink, possibleCollision.line);
@@ -117,12 +117,17 @@ const isValidLink = (candidateLink: Line2, edges: Edge[]): boolean => {
     }
     const intersectedCorner = possibleCollision.corners.find(c => isSameVector2(c.p, intersection));
     if (!intersectedCorner) {
-      return false;
+      return isSameVector2(intersection, candidateLink[1])
+        || isInsideOrSameAngle(angle, possibleCollision.angleOpposite, possibleCollision.angle);
     }
-    return (
-      isInsideOrSameAngle(angle, intersectedCorner.thetaA, intersectedCorner.thetaB)
-      || isInsideOrSameAngle(angle, intersectedCorner.thetaAOpposite, intersectedCorner.thetaBOpposite)
-    );
+    if (allowNonOptimalPaths) {
+      if (isSameVector2(intersection, candidateLink[0])) {
+        return isInsideOrSameAngle(angle, intersectedCorner.thetaAOpposite, intersectedCorner.thetaB);
+      }
+      return isInsideOrSameAngle(angle, intersectedCorner.thetaA, intersectedCorner.thetaBOpposite);
+    }
+    return isInsideOrSameAngle(angle, intersectedCorner.thetaA, intersectedCorner.thetaB)
+      || isInsideOrSameAngle(angle, intersectedCorner.thetaAOpposite, intersectedCorner.thetaBOpposite);
   });
 };
 
@@ -130,8 +135,8 @@ export const getPath = (navMesh: Graph<Vector2, number>, edges: Edge[], start: V
   const clone = cloneMesh(navMesh);
   const startId = start.join();
   const endId = end.join();
-  const startToEnd: Line2 = [start, end];
-  const canLinkStartToEnd = isValidLink(startToEnd, edges);
+  const startToEnd: Line2 = [ start, end ];
+  const canLinkStartToEnd = isValidLink(startToEnd, edges, true);
 
   clone.addNode(startId, start);
   clone.addNode(endId, end);
@@ -144,10 +149,10 @@ export const getPath = (navMesh: Graph<Vector2, number>, edges: Edge[], start: V
     const p = edge.line[0];
     const startLink = line(start, p);
     const endLink = line(p, end);
-    if (isValidLink(startLink, otherEdges)) {
+    if (isValidLink(startLink, otherEdges, true)) {
       clone.addLink(startId, p.join(), getDistance(start, p));
     }
-    if (isValidLink(endLink, otherEdges)) {
+    if (isValidLink(endLink, otherEdges, true)) {
       clone.addLink(p.join(), endId, getDistance(p, end));
     }
   });

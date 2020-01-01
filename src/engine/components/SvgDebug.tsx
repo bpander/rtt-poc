@@ -33,7 +33,11 @@ const DebugNavMesh: React.FC = () => {
   return (
     <g stroke="rgba(255, 0, 0, 0.3)">
       {links.map(([ [ x1, y1 ], [ x2, y2 ] ], i) => (
-        <line key={i} {...{x1, y1, x2, y2}} />
+        <React.Fragment key={i}>
+          <circle cx={x1} cy={y1} r={2 / engine.camera.scale} fill="red" />
+          <line {...{x1, y1, x2, y2}} />
+          <circle cx={x2} cy={y2} r={2 / engine.camera.scale} fill="red" />
+        </React.Fragment>
       ))}
     </g>
   );
