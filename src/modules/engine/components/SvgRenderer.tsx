@@ -26,7 +26,7 @@ export const SvgRenderer: React.FC<RendererProps> = props => {
             return null;
           }
           return (
-            <g key={entity.id} transform={`translate(${entity.position.join(' ')})`}>
+            <g key={entity.id} transform={`translate(${entity.position.join(' ')}) rotate(${entity.rotation * 180 / Math.PI} 0 0)`}>
               <svgSprite.Component facet={svgSprite} entity={entity} />
             </g>
           );

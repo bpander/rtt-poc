@@ -9,17 +9,17 @@ const originalSize = 512;
 
 export const Token: React.FC<EntityComponentProps> = ({ facet, entity, children }) => {
   const dispatch = useDispatch();
-  const { xhess, engine } = useRootState();
-  const isSelected = xhess.selected.includes(entity.id);
+  const { xhess } = useRootState();
+  // const isSelected = xhess.selected.includes(entity.id);
   const team = xhess.teams.find(team => team.entities.includes(entity.id));
   const color = team ? team.color : 'grey';
-  const strokeWidth = (isSelected) ? 2 : 1;
+  // const strokeWidth = (isSelected) ? 2 : 1;
   const onClick = () => {
     if (!team || team.name !== xhess.playerTeam) {
       return;
     }
     dispatch(updateXhess({
-      selected: isSelected ? [] : [ entity.id ],
+      // selected: isSelected ? [] : [ entity.id ],
     }));
   };
   const transform = useMemo(() => {
@@ -32,9 +32,9 @@ export const Token: React.FC<EntityComponentProps> = ({ facet, entity, children 
   return (
     <g
       transform={transform}
-      fill="white"
-      stroke={color}
-      strokeWidth={strokeWidth * engine.camera.scale}
+      fill={color}
+      // stroke={color}
+      // strokeWidth={strokeWidth * engine.camera.scale}
       onClick={onClick}
     >
       {children}

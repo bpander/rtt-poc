@@ -1,3 +1,4 @@
+import { times } from 'util/arrays';
 
 export type Vector2 = [number, number];
 export type Line2 = [Vector2, Vector2];
@@ -14,6 +15,18 @@ export const addVector2 = ([ x1, y1 ]: Vector2, [ x2, y2 ]: Vector2): Vector2 =>
 };
 
 export const scaleVector2 = (v2: Vector2, scale: number) => v2.map(n => n * scale) as Vector2;
+
+export const rotatePoint = ([ x, y ]: Vector2, theta: number): Vector2 => {
+  return [
+    x * Math.cos(theta) - y * Math.sin(theta),
+    x * Math.sin(theta) + y * Math.cos(theta),
+  ];
+};
+
+export const regularPolygon = (r: number, segments: number): Shape2 => {
+  const theta = TAU / segments;
+  return times(segments, n => rotatePoint([ r, 0 ], n * theta));
+};
 
 export const getDistance = ([x1, y1]: Vector2, [x2, y2]: Vector2): number => {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));

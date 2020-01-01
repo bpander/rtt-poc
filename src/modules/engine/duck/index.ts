@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-import { Shape2, addVector2, Vector2, getDistance } from 'modules/geo2d/core';
+import { Shape2, addVector2, Vector2, getDistance, rotatePoint } from 'modules/geo2d/core';
 import { getNavMesh2d, Edge } from 'modules/geo2d/navMesh2d';
 import { createSlice } from 'modules/create-slice';
 
@@ -52,7 +52,7 @@ export const tick = configureAction<number>(
       const angle = Math.atan2(y2 - y1, x2 - x1);
       const movement: Vector2 = [ Math.cos(angle) * d, Math.sin(angle) * d ];
       const newPosition = addVector2(entity.position, movement);
-      return { ...entity, position: newPosition };
+      return { ...entity, rotation: angle + Math.PI / 2, position: newPosition };
     });
     return { ...state, entities };
   },
@@ -64,7 +64,7 @@ export const getNavMeshHoles = createSelector(
     const holes: Shape2[] = [];
     entities.forEach(entity => {
       const holeFacets = entity.facets.filter(isFacetType(FacetType.NavMeshHole));
-      const holeShapes = holeFacets.map(f => f.shape.map(v2 => addVector2(v2, entity.position)));
+      const holeShapes = holeFacets.map(f => f.shape.map(v2 => addVector2(rotatePoint(v2, entity.rotation), entity.position)));
       holes.push(...holeShapes);
     });
     return holes;

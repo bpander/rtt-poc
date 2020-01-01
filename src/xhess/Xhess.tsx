@@ -12,7 +12,7 @@ const Renderer: React.FC = () => {
   const onAnimationFrame = useCallback((elapsed: number) => dispatch(tick(elapsed)), [ dispatch ]);
   useAnimationFrame(onAnimationFrame);
   const { engine } = useRootState();
-  return <SvgRenderer engine={engine} debug={{ showGrid: true, showNavMesh: true, showPaths: true }} />;
+  return <SvgRenderer engine={engine} debug={{ showNavMesh: true, showPaths: true }} />;
 };
 
 export const Xhess: React.FC = () => {

@@ -33,15 +33,22 @@ const DebugNavMesh: React.FC = () => {
   const links = useMemo(() => findNavMeshLinks(engine.navMesh), [ engine.navMesh ]);
 
   return (
-    <g stroke="rgba(255, 0, 0, 0.3)">
-      {links.map(([ [ x1, y1 ], [ x2, y2 ] ], i) => (
-        <React.Fragment key={i}>
-          <circle cx={x1} cy={y1} r={2 / engine.camera.scale} fill="red" />
-          <line {...{x1, y1, x2, y2}} />
-          <circle cx={x2} cy={y2} r={2 / engine.camera.scale} fill="red" />
-        </React.Fragment>
-      ))}
-    </g>
+    <React.Fragment>
+      <g stroke="rgba(255, 0, 0, 0.3)">
+        {links.map(([ [ x1, y1 ], [ x2, y2 ] ], i) => (
+          <React.Fragment key={i}>
+            <circle cx={x1} cy={y1} r={2 / engine.camera.scale} fill="red" />
+            <line {...{x1, y1, x2, y2}} />
+            <circle cx={x2} cy={y2} r={2 / engine.camera.scale} fill="red" />
+          </React.Fragment>
+        ))}
+      </g>
+      <g fill="rgba(255, 0, 0, 0.05)">
+        {engine.navMesh.map((edges, i) => (
+          <polygon key={i} points={edges.map(edge => edge.line[0].join()).join(' ')} />
+        ))}
+      </g>
+    </React.Fragment>
   );
 };
 

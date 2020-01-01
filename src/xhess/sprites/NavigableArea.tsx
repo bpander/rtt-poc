@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useRootState } from 'root';
-import { scaleVector2, Vector2 } from 'modules/geo2d/core';
+import { scaleVector2 } from 'modules/geo2d/core';
 import { useDispatch } from 'react-redux';
 import { updateEngine, getNavMeshGraph } from 'modules/engine/duck';
 import { isFacetType, FacetType } from 'modules/engine/models/Entity';
@@ -14,8 +14,7 @@ export const NavigableArea: React.FC = () => {
   const { width, height, camera } = engine;
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
-    const destinationRaw = scaleVector2([ e.clientX - left, e.clientY - top ], 1 / camera.scale);
-    const destination = destinationRaw.map(n => Math.floor(n) + 0.5) as Vector2;
+    const destination = scaleVector2([ e.clientX - left, e.clientY - top ], 1 / camera.scale);
     const navMeshGraph = getNavMeshGraph(engine);
     const entities = engine.entities.map(entity => {
       if (!xhess.selected.includes(entity.id)) {
