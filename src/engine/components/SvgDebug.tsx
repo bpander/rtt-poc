@@ -3,7 +3,8 @@ import React, { useMemo } from 'react';
 import { isFacetType, FacetType } from 'engine/models/Entity';
 import { times } from 'util/arrays';
 import { useRootState } from 'root';
-import { toLines, findNavMeshLinks } from 'geo2d/navMesh2d';
+import { findNavMeshLinks } from 'geo2d/navMesh2d';
+import { toLines } from 'geo2d/core';
 import { DebugProps } from './RendererProps';
 
 const DebugGrid: React.FC = () => {

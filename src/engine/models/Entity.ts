@@ -53,7 +53,5 @@ export interface Entity {
   id: string;
   position: Vector2;
   rotation: number;
-  // velocity: Vector2;
-  // baseMaxVelocity: number;
   facets: Facet[];
 }

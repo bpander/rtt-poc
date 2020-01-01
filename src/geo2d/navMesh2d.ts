@@ -1,4 +1,4 @@
-import { getAngleBetweenPoints, Vector2, Line2, Shape2, getIntersection, getDistance, isSameVector2 } from './core';
+import { getAngleBetweenPoints, Vector2, Line2, Shape2, getIntersection, getDistance, isSameVector2, line } from './core';
 import createGraph, { Graph } from 'ngraph.graph';
 import { aStar } from 'ngraph.path';
 import { removeFirst } from 'util/arrays';
@@ -62,57 +62,6 @@ export const getEdges = (shapes: Shape2[]): Edge[][] => {
   return shapeEdges;
 };
 
-export const findNavMeshLinks = (shapeEdges: Edge[][]): Line2[] => {
-  const links: Line2[] = [];
-  const linkableEdges = shapeEdges.map(edges => {
-    const otherHoles = removeFirst(shapeEdges, edges).map(h => h.map(e => e.line[0]));
-    return edges.filter(edge => {
-      return otherHoles.every(otherHole => robustPointInPolygon(otherHole, edge.line[0]) !== -1);
-    });
-  }).flat();
-  const allEdges = shapeEdges.flat();
-  const remainingEdges = [ ...linkableEdges ];
-  while (true) {
-    const edge = remainingEdges.pop();
-    if (!edge) { break; }
-    const otherEdges = removeFirst(allEdges, edge);
-    remainingEdges.forEach(remainingEdge => {
-      const candidateLink: Line2 = [ edge.line[0], remainingEdge.line[0] ];
-      if (isValidLink(candidateLink, otherEdges)) {
-        links.push(candidateLink);
-      }
-    });
-  }
-  return links;
-};
-
-const line = (p1: Vector2, p2: Vector2): Line2 => [ p1, p2 ];
-
-export const toLines = (shape: Shape2): Line2[] => {
-  return shape.map((p, i) => line(p, shape[(i + 1) % shape.length]));
-};
-
-export const getNavMesh2d = (shapeEdges: Edge[][]): Graph<Vector2, number> => {
-  const graph = createGraph<Vector2, number>();
-  const links = findNavMeshLinks(shapeEdges);
-  links.forEach(([ p1, p2 ]) => {
-    const p1Id = p1.join();
-    const p2Id = p2.join();
-    graph.addNode(p1Id, p1);
-    graph.addNode(p2Id, p2);
-    graph.addLink(p2Id, p1Id, getDistance(p1, p2));
-  });
-
-  return graph;
-};
-
-const cloneMesh = (navMesh: Graph<Vector2, number>) => {
-  const g = createGraph<Vector2, number>();
-  navMesh.forEachNode(node => { g.addNode(node.id, node.data); });
-  navMesh.forEachLink(link => { g.addLink(link.fromId, link.toId, link.data); });
-  return g;
-};
-
 const isValidLink = (candidateLink: Line2, edges: Edge[], allowNonOptimalPaths?: boolean): boolean => {
   const angle = getAngleBetweenPoints(...candidateLink);
   return edges.every(possibleCollision => {
@@ -137,6 +86,51 @@ const isValidLink = (candidateLink: Line2, edges: Edge[], allowNonOptimalPaths?:
     return isInsideOrSameAngle(angle, intersectedCorner.thetaA, intersectedCorner.thetaB)
       || isInsideOrSameAngle(angle, intersectedCorner.thetaAOpposite, intersectedCorner.thetaBOpposite);
   });
+};
+
+export const findNavMeshLinks = (shapeEdges: Edge[][]): Line2[] => {
+  const links: Line2[] = [];
+  const linkableEdges = shapeEdges.map(edges => {
+    const otherHoles = removeFirst(shapeEdges, edges).map(h => h.map(e => e.line[0]));
+    return edges.filter(edge => {
+      return otherHoles.every(otherHole => robustPointInPolygon(otherHole, edge.line[0]) !== -1);
+    });
+  }).flat();
+  const allEdges = shapeEdges.flat();
+  const remainingEdges = [ ...linkableEdges ];
+  while (true) {
+    const edge = remainingEdges.pop();
+    if (!edge) { break; }
+    const otherEdges = removeFirst(allEdges, edge);
+    remainingEdges.forEach(remainingEdge => {
+      const candidateLink: Line2 = [ edge.line[0], remainingEdge.line[0] ];
+      if (isValidLink(candidateLink, otherEdges)) {
+        links.push(candidateLink);
+      }
+    });
+  }
+  return links;
+};
+
+export const getNavMesh2d = (shapeEdges: Edge[][]): Graph<Vector2, number> => {
+  const graph = createGraph<Vector2, number>();
+  const links = findNavMeshLinks(shapeEdges);
+  links.forEach(([ p1, p2 ]) => {
+    const p1Id = p1.join();
+    const p2Id = p2.join();
+    graph.addNode(p1Id, p1);
+    graph.addNode(p2Id, p2);
+    graph.addLink(p2Id, p1Id, getDistance(p1, p2));
+  });
+
+  return graph;
+};
+
+const cloneMesh = (navMesh: Graph<Vector2, number>) => {
+  const g = createGraph<Vector2, number>();
+  navMesh.forEachNode(node => { g.addNode(node.id, node.data); });
+  navMesh.forEachLink(link => { g.addLink(link.fromId, link.toId, link.data); });
+  return g;
 };
 
 export const getPath = (navMesh: Graph<Vector2, number>, edges: Edge[], start: Vector2, end: Vector2) => {
