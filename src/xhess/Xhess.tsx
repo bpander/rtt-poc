@@ -1,14 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { MainScene } from './scenes/main/MainScene';
 import { SvgRenderer } from 'modules/engine/components/SvgRenderer';
-import { useAnimationFrames } from 'modules/engine/hooks/useAnimationFrames';
+import { useAnimationFrame } from 'modules/use-animation-frame/useAnimationFrame';
 import { useRootState, rootStore } from 'root';
-import { Provider } from 'react-redux';
-import { updateEngine } from 'modules/engine/duck';
+import { Provider, useDispatch } from 'react-redux';
+import { updateEngine, tick } from 'modules/engine/duck';
 import { emptyCamera } from 'modules/engine/models/Camera';
 
 const Renderer: React.FC = () => {
-  useAnimationFrames();
+  const dispatch = useDispatch();
+  const onAnimationFrame = useCallback((elapsed: number) => dispatch(tick(elapsed)), [ dispatch ]);
+  useAnimationFrame(onAnimationFrame);
   const { engine } = useRootState();
   return <SvgRenderer engine={engine} debug={{ showGrid: true, showNavMesh: true, showPaths: true }} />;
 };
