@@ -13,7 +13,7 @@ export interface EngineState {
   height: number;
   camera: Camera;
   entities: Entity[];
-  navMesh: Edge[];
+  navMesh: Edge[][];
 }
 
 const initialEngineState: EngineState = {

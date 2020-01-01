@@ -25,7 +25,7 @@ export const NavigableArea: React.FC = () => {
       if (!facet) {
         return entity;
       }
-      const path = getPath(navMeshGraph, engine.navMesh, entity.position, destination);
+      const path = getPath(navMeshGraph, engine.navMesh.flat(), entity.position, destination);
       return {
         ...entity,
         facets: removeFirst(entity.facets, facet, { ...facet, path }),

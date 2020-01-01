@@ -2,6 +2,7 @@ import { getAngleBetweenPoints, Vector2, Line2, Shape2, getIntersection, getDist
 import createGraph, { Graph } from 'ngraph.graph';
 import { aStar } from 'ngraph.path';
 import { removeFirst } from 'util/arrays';
+import robustPointInPolygon from 'robust-point-in-polygon';
 
 export const isInsideOrSameAngle = (angle: number, thetaA: number, thetaB: number) => {
   if (thetaA < thetaB) {
@@ -17,7 +18,7 @@ export interface Edge {
   corners: [ Corner, Corner ];
 }
 
-interface Corner {
+export interface Corner {
   p: Vector2;
   thetaA: number;
   thetaAOpposite: number;
@@ -25,7 +26,7 @@ interface Corner {
   thetaBOpposite: number;
 }
 
-export const getEdges = (shapes: Shape2[]): Edge[] => {
+export const getEdges = (shapes: Shape2[]): Edge[][] => {
   const shapeEdges = shapes.map(shape => {
     return shape.map((v2, i) => {
       const a = shape[(i - 1 + shape.length) % shape.length];
@@ -58,16 +59,23 @@ export const getEdges = (shapes: Shape2[]): Edge[] => {
       return edge;
     });
   });
-  return shapeEdges.flat();
+  return shapeEdges;
 };
 
-export const findNavMeshLinks = (edges: Edge[]): Line2[] => {
+export const findNavMeshLinks = (shapeEdges: Edge[][]): Line2[] => {
   const links: Line2[] = [];
-  const remainingEdges = [ ...edges ];
+  const linkableEdges = shapeEdges.map(edges => {
+    const otherHoles = removeFirst(shapeEdges, edges).map(h => h.map(e => e.line[0]));
+    return edges.filter(edge => {
+      return otherHoles.every(otherHole => robustPointInPolygon(otherHole, edge.line[0]) !== -1);
+    });
+  }).flat();
+  const allEdges = shapeEdges.flat();
+  const remainingEdges = [ ...linkableEdges ];
   while (true) {
     const edge = remainingEdges.pop();
     if (!edge) { break; }
-    const otherEdges = removeFirst(edges, edge);
+    const otherEdges = removeFirst(allEdges, edge);
     remainingEdges.forEach(remainingEdge => {
       const candidateLink: Line2 = [ edge.line[0], remainingEdge.line[0] ];
       if (isValidLink(candidateLink, otherEdges)) {
@@ -84,9 +92,9 @@ export const toLines = (shape: Shape2): Line2[] => {
   return shape.map((p, i) => line(p, shape[(i + 1) % shape.length]));
 };
 
-export const getNavMesh2d = (edges: Edge[]): Graph<Vector2, number> => {
+export const getNavMesh2d = (shapeEdges: Edge[][]): Graph<Vector2, number> => {
   const graph = createGraph<Vector2, number>();
-  const links = findNavMeshLinks(edges);
+  const links = findNavMeshLinks(shapeEdges);
   links.forEach(([ p1, p2 ]) => {
     const p1Id = p1.join();
     const p2Id = p2.join();
