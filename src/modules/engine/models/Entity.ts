@@ -7,43 +7,39 @@ export enum FacetType {
   NavMeshHole,
 }
 
-export interface FacetBase {
-  type: FacetType;
+export interface FacetBase<T extends FacetType> {
+  type: T;
 }
 
-export interface ColliderFacet extends FacetBase {
-  type: FacetType.Collider;
+export interface ColliderFacet extends FacetBase<FacetType.Collider> {
   size: Vector2;
 }
 
 export interface EntityComponentProps { facet: SvgSpriteFacet; entity: Entity }
 
-export interface SvgSpriteFacet extends FacetBase {
-  type: FacetType.SvgSprite;
+export interface SvgSpriteFacet extends FacetBase<FacetType.SvgSprite> {
   size: Vector2;
   Component: React.ComponentType<EntityComponentProps>;
 }
 
-export interface NavMeshAgentFacet extends FacetBase {
-  type: FacetType.NavMeshAgent;
+export interface NavMeshAgentFacet extends FacetBase<FacetType.NavMeshAgent> {
   path: Vector2[];
   velocity: number;
 }
 
-export interface NavMeshHoleFacet extends FacetBase {
-  type: FacetType.NavMeshHole;
+export interface NavMeshHoleFacet extends FacetBase<FacetType.NavMeshHole> {
   shape: Shape2;
 }
 
-export type FacetMap = {
-  [FacetType.Collider]: ColliderFacet;
-  [FacetType.SvgSprite]: SvgSpriteFacet;
-  [FacetType.NavMeshAgent]: NavMeshAgentFacet;
-  [FacetType.NavMeshHole]: NavMeshHoleFacet;
-}
+export type Facet = 
+  | SvgSpriteFacet
+  | ColliderFacet
+  | NavMeshAgentFacet
+  | NavMeshHoleFacet
 
-type ValueOf<T> = T[keyof T];
-export type Facet = ValueOf<FacetMap>;
+export type FacetMap = {
+  [FT in FacetType]: Extract<Facet, { type: FT }>;
+};
 
 export const isFacetType = <T extends FacetType>(t: T) => (facet: Facet): facet is FacetMap[T] => {
   return facet.type === t;
