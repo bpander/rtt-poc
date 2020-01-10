@@ -7,9 +7,11 @@ export enum FacetType {
   NavMeshHole,
 }
 
-export interface FacetBase<T extends FacetType> {
+export interface FacetBase<T extends number> {
   type: T;
 }
+
+export type AnyFacet = FacetBase<number>;
 
 export interface ColliderFacet extends FacetBase<FacetType.Collider> {
   size: Vector2;
@@ -41,9 +43,14 @@ export type FacetMap = {
   [FT in FacetType]: Extract<Facet, { type: FT }>;
 };
 
-export const isFacetType = <T extends FacetType>(t: T) => (facet: Facet): facet is FacetMap[T] => {
-  return facet.type === t;
+export const createIsFacetType = <TFacetMap extends Record<string, AnyFacet>>() => {
+  const isFacetType = <T extends keyof TFacetMap>(t: T) => (facet: AnyFacet): facet is TFacetMap[T] => {
+    return facet.type === t;
+  };
+  return isFacetType;
 };
+
+export const isFacetType = createIsFacetType<FacetMap>();
 
 export interface Entity {
   id: string;
