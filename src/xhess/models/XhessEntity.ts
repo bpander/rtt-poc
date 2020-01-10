@@ -5,7 +5,7 @@ export enum XhessFacetType {
 }
 
 export interface ActorFacet extends FacetBase<XhessFacetType.Actor> {
-  team: string;
+  teamName: string;
   selected: boolean;
 }
 

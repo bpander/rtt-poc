@@ -6,6 +6,7 @@ export type Shape2 = Vector2[];
 
 export const TAU = Math.PI * 2;
 
+// TODO: This is susceptible to floating point errors
 export const isSameVector2 = ([ x1, y1 ]: Vector2, [ x2, y2 ]: Vector2): boolean => {
   return x1 === x2 && y1 === y2;
 };

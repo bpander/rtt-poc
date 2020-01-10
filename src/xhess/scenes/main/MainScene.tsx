@@ -9,7 +9,7 @@ import { NavigableArea } from 'xhess/sprites/NavigableArea';
 import { updateXhess } from 'xhess/duck';
 import { getEdges } from 'modules/geo2d/navMesh2d';
 import { regularPolygon } from 'modules/geo2d/core';
-import { XhessEntity } from 'xhess/models/XhessEntity';
+import { XhessEntity, XhessFacetType } from 'xhess/models/XhessEntity';
 import { useRootState } from 'root';
 import { EntityName } from 'xhess/enums/EntityName';
 import { Ring } from 'xhess/sprites/Ring';
@@ -22,6 +22,7 @@ const initialEntities: XhessEntity[] = [
     rotation: 0,
     facets: [
       { type: FacetType.NavMeshAgent, path: [], velocity: 9 },
+      { type: XhessFacetType.Actor, teamName: 'blue', selected: true },
     ],
   },
   {
@@ -68,11 +69,11 @@ export const MainScene: React.FC = () => {
       navMesh: getEdges(getNavMeshHoles(initialEntities)),
     }));
     dispatch(updateXhess({
+      playerTeam: 'blue',
       teams: [
         {
           name: 'blue',
-          color: 'blue',
-          entities: [ 'player_rock', 'player_paper', 'player_scissors' ],
+          color: '#3333ee',
         },
       ],
     }));
@@ -83,6 +84,7 @@ export const MainScene: React.FC = () => {
       <NavigableArea />
       {engine.entities.map(entity => {
         switch (entity.name) {
+          // TODO: There's probably a more concise way of doing this
           case EntityName.Box: return <Box key={entity.id} entity={entity} />;
           case EntityName.Ring: return <Ring key={entity.id} entity={entity} />;
           case EntityName.Player: return <Scissors key={entity.id} entity={entity} />;
