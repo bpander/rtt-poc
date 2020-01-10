@@ -5,7 +5,7 @@ import { getNavMesh2d, Edge } from 'modules/geo2d/navMesh2d';
 import { createSlice } from 'modules/create-slice';
 
 import { Camera, emptyCamera } from '../models/Camera';
-import { Entity, isFacetType, FacetType } from '../models/Entity';
+import { Entity, isStockFacetType, FacetType } from '../models/Entity';
 import { removeFirst } from 'util/arrays';
 
 export interface EngineState {
@@ -33,7 +33,7 @@ export const tick = configureAction<number>(
   'TICK',
   elapsed => state => {
     const entities = state.entities.map(entity => {
-      const agent = entity.facets.find(isFacetType(FacetType.NavMeshAgent));
+      const agent = entity.facets.find(isStockFacetType(FacetType.NavMeshAgent));
       if (!agent) {
         return entity;
       }
@@ -63,7 +63,7 @@ export const getNavMeshHoles = createSelector(
   entities => {
     const holes: Shape2[] = [];
     entities.forEach(entity => {
-      const holeFacets = entity.facets.filter(isFacetType(FacetType.NavMeshHole));
+      const holeFacets = entity.facets.filter(isStockFacetType(FacetType.NavMeshHole));
       const holeShapes = holeFacets.map(f => f.shape.map(v2 => addVector2(rotatePoint(v2, entity.rotation), entity.position)));
       holes.push(...holeShapes);
     });

@@ -4,9 +4,10 @@ import { useRootState } from 'root';
 import { scaleVector2 } from 'modules/geo2d/core';
 import { useDispatch } from 'react-redux';
 import { updateEngine, getNavMeshGraph } from 'modules/engine/duck';
-import { isFacetType, FacetType } from 'modules/engine/models/Entity';
+import { FacetType } from 'modules/engine/models/Entity';
 import { removeFirst } from 'util/arrays';
 import { getPath } from 'modules/geo2d/navMesh2d';
+import { isFacetType } from 'xhess/models/XhessFacet';
 
 export const NavigableArea: React.FC = () => {
   const dispatch = useDispatch();

@@ -5,7 +5,7 @@ import { useRootState } from 'root';
 import { findNavMeshLinks } from 'modules/geo2d/navMesh2d';
 import { toLines } from 'modules/geo2d/core';
 
-import { isFacetType, FacetType } from '../models/Entity';
+import { isStockFacetType, FacetType } from '../models/Entity';
 import { DebugProps } from './RendererProps';
 
 const DebugGrid: React.FC = () => {
@@ -57,7 +57,7 @@ const DebugPaths: React.FC = () => {
   const { scale } = engine.camera;
   const paths = engine.entities.map(e => [
     e.position,
-    ...e.facets.filter(isFacetType(FacetType.NavMeshAgent)).map(f => f.path).flat(),
+    ...e.facets.filter(isStockFacetType(FacetType.NavMeshAgent)).map(f => f.path).flat(),
   ]);
   const pathLines = paths.map(p => toLines(p).slice(0, -1)).flat();
 

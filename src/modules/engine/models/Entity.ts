@@ -50,7 +50,7 @@ export const createIsFacetType = <TFacetMap extends Record<string, AnyFacet>>() 
   return isFacetType;
 };
 
-export const isFacetType = createIsFacetType<FacetMap>();
+export const isStockFacetType = createIsFacetType<FacetMap>();
 
 export interface Entity {
   id: string;
