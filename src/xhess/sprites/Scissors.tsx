@@ -1,5 +1,5 @@
 import React from 'react';
-import { EntityComponentProps } from 'modules/engine/models/Entity';
+import { EntityComponentProps } from 'modules/engine/components/EntityComponentProps';
 import { Token } from './Token';
 
 export const Scissors: React.FC<EntityComponentProps> = props => {

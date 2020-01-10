@@ -7,7 +7,7 @@ export const times = <T>(n: number, fn: (i: number) => T): T[] => {
   return arr;
 };
 
-export const removeFirst = <T>(haystack: T[], needle: T, replacement?: T): T[] => {
+export const removeFirst = <T, U extends T>(haystack: T[], needle: U, replacement?: U): T[] => {
   const index = haystack.indexOf(needle);
   if (index === -1) {
     return haystack;

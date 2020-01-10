@@ -7,7 +7,7 @@ import { updateEngine, getNavMeshGraph } from 'modules/engine/duck';
 import { FacetType } from 'modules/engine/models/Entity';
 import { removeFirst } from 'util/arrays';
 import { getPath } from 'modules/geo2d/navMesh2d';
-import { isFacetType } from 'xhess/models/XhessFacet';
+import { isFacetType } from 'xhess/models/XhessEntity';
 
 export const NavigableArea: React.FC = () => {
   const dispatch = useDispatch();
@@ -36,8 +36,8 @@ export const NavigableArea: React.FC = () => {
 
   return (
       <rect
-        width={width}
-        height={height}
+        width={width / camera.scale}
+        height={height / camera.scale}
         fill="rgba(0, 0, 0, 0)"
         onClick={onAreaClick}
       />

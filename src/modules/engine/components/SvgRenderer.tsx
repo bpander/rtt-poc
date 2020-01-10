@@ -1,11 +1,10 @@
 import React from 'react';
 
 import { RendererProps } from './RendererProps';
-import { isStockFacetType, FacetType } from '../models/Entity';
 import { SvgDebug } from './SvgDebug';
 
 export const SvgRenderer: React.FC<RendererProps> = props => {
-  const { width, height, camera, entities } = props.engine;
+  const { width, height, camera } = props.engine;
   const cameraTransform = [
     `scale(${camera.scale})`,
     `translate(${camera.position.join(' ')})`,
@@ -20,19 +19,8 @@ export const SvgRenderer: React.FC<RendererProps> = props => {
     >
       <g transform={cameraTransform}>
         {props.debug && <SvgDebug {...props.debug} />}
-        {entities.map(entity => {
-          const svgSprite = entity.facets.find(isStockFacetType(FacetType.SvgSprite));
-          if (!svgSprite) {
-            return null;
-          }
-          return (
-            <g key={entity.id} transform={`translate(${entity.position.join(' ')}) rotate(${entity.rotation * 180 / Math.PI} 0 0)`}>
-              <svgSprite.Component facet={svgSprite} entity={entity} />
-            </g>
-          );
-        })}
+        {props.children}
       </g>
-      {props.children}
     </svg>
   );
 };

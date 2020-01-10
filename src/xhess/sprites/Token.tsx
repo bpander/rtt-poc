@@ -1,43 +1,21 @@
-import React, { useMemo } from 'react';
-import { EntityComponentProps } from 'modules/engine/models/Entity';
-import { scaleVector2 } from 'modules/geo2d/core';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { useRootState } from 'root';
-import { updateXhess } from 'xhess/duck';
+import { EntityComponentProps } from 'modules/engine/components/EntityComponentProps';
+import { SvgEntity } from 'modules/engine/components/SvgEntity';
 
 const originalSize = 512;
 
-export const Token: React.FC<EntityComponentProps> = ({ facet, entity, children }) => {
-  const dispatch = useDispatch();
+export const Token: React.FC<EntityComponentProps> = ({ entity, children }) => {
   const { xhess } = useRootState();
-  // const isSelected = xhess.selected.includes(entity.id);
   const team = xhess.teams.find(team => team.entities.includes(entity.id));
   const color = team ? team.color : 'grey';
-  // const strokeWidth = (isSelected) ? 2 : 1;
-  const onClick = () => {
-    if (!team || team.name !== xhess.playerTeam) {
-      return;
-    }
-    dispatch(updateXhess({
-      // selected: isSelected ? [] : [ entity.id ],
-    }));
-  };
-  const transform = useMemo(() => {
-    return [
-      `translate(${scaleVector2(facet.size, -0.5).join(' ')})`,
-      `scale(${scaleVector2(facet.size, 1 / originalSize).join(' ')})`
-    ].join(' ');
-  }, [ facet.size ]);
+  const transform = `translate(-0.5 -0.5) scale(${1 / originalSize})`;
 
   return (
-    <g
-      transform={transform}
-      fill={color}
-      // stroke={color}
-      // strokeWidth={strokeWidth * engine.camera.scale}
-      onClick={onClick}
-    >
-      {children}
-    </g>
+    <SvgEntity entity={entity}>
+      <g fill={color} transform={transform}>
+        {children}
+      </g>
+    </SvgEntity>
   );
 };
