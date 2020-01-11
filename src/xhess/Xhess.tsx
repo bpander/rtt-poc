@@ -13,7 +13,7 @@ const Renderer: React.FC = () => {
   useAnimationFrame(onAnimationFrame);
   const { engine } = useRootState();
   return (
-    <SvgRenderer engine={engine} debug={{ showNavMesh: true, showPaths: true }}>
+    <SvgRenderer engine={engine} debug={{ showFPS: true, showNavMesh: true, showPaths: true }}>
       <MainScene />
     </SvgRenderer>
   );

@@ -9,6 +9,7 @@ import { Entity, isStockFacetType, FacetType } from '../models/Entity';
 import { removeFirst } from 'util/arrays';
 
 export interface EngineState {
+  elapsed: number;
   width: number;
   height: number;
   camera: Camera;
@@ -17,6 +18,7 @@ export interface EngineState {
 }
 
 const initialEngineState: EngineState = {
+  elapsed: 0,
   width: 0,
   height: 0,
   camera: emptyCamera,
@@ -54,7 +56,7 @@ export const tick = configureAction<number>(
       const newPosition = addVector2(entity.position, movement);
       return { ...entity, rotation: angle + Math.PI / 2, position: newPosition };
     });
-    return { ...state, entities };
+    return { ...state, entities, elapsed };
   },
 );
 

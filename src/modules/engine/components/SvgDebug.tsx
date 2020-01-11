@@ -1,15 +1,14 @@
 import React, { useMemo } from 'react';
 
 import { times } from 'util/arrays';
-import { useRootState } from 'root';
 import { findNavMeshLinks } from 'modules/geo2d/navMesh2d';
 import { toLines } from 'modules/geo2d/core';
 
 import { isStockFacetType, FacetType } from '../models/Entity';
 import { DebugProps } from './RendererProps';
+import { EngineState } from '../duck';
 
-const DebugGrid: React.FC = () => {
-  const { engine } = useRootState();
+const DebugGrid: React.FC<{ engine: EngineState }> = ({ engine }) => {
   const { scale } = engine.camera;
   const width = engine.width / scale;
   const height = engine.height / scale;
@@ -28,8 +27,7 @@ const DebugGrid: React.FC = () => {
   );
 };
 
-const DebugNavMesh: React.FC = () => {
-  const { engine } = useRootState();
+const DebugNavMesh: React.FC<{ engine: EngineState }> = ({ engine }) => {
   const links = useMemo(() => findNavMeshLinks(engine.navMesh), [ engine.navMesh ]);
 
   return (
@@ -52,8 +50,7 @@ const DebugNavMesh: React.FC = () => {
   );
 };
 
-const DebugPaths: React.FC = () => {
-  const { engine } = useRootState();
+const DebugPaths: React.FC<{ engine: EngineState }> = ({ engine }) => {
   const { scale } = engine.camera;
   const paths = engine.entities.map(e => [
     e.position,
@@ -67,18 +64,30 @@ const DebugPaths: React.FC = () => {
         <line key={i} {...{x1, y1, x2, y2}} />
       ))}
     </g>
-  )
+  );
 };
 
-export const SvgDebug: React.FC<DebugProps> = props => {
-  const { engine } = useRootState();
+const DebugFPS: React.FC<{ engine: EngineState }> = ({ engine }) => {
+  return (
+    <text
+      transform={`scale(${1 / engine.camera.scale})`}
+      dominantBaseline="hanging"
+    >
+      {(1000 / engine.elapsed).toFixed(2)} fps
+    </text>
+  );
+};
+
+export const SvgDebug: React.FC<DebugProps & { engine: EngineState }> = props => {
+  const { engine } = props;
   const { scale } = engine.camera;
 
   return (
     <g strokeWidth={1 / scale}>
-      {(props.showGrid) && <DebugGrid />}
-      {(props.showNavMesh) && <DebugNavMesh />}
-      {(props.showPaths) && <DebugPaths />}
+      {(props.showGrid) && <DebugGrid engine={engine} />}
+      {(props.showNavMesh) && <DebugNavMesh engine={engine} />}
+      {(props.showPaths) && <DebugPaths engine={engine} />}
+      {(props.showFPS) && <DebugFPS engine={engine} />}
     </g>
   );
 };

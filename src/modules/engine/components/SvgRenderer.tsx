@@ -18,7 +18,7 @@ export const SvgRenderer: React.FC<RendererProps> = props => {
       style={{ border: '1px solid black' }}
     >
       <g transform={cameraTransform}>
-        {props.debug && <SvgDebug {...props.debug} />}
+        {props.debug && <SvgDebug engine={props.engine} {...props.debug} />}
         {props.children}
       </g>
     </svg>
