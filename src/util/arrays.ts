@@ -20,3 +20,5 @@ export const removeFirst = <T, U extends T>(haystack: T[], needle: U, replacemen
   }
   return clone;
 };
+
+export const last = <T>(arr: T[]): T | undefined => arr[arr.length - 1];

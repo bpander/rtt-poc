@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 
 import { useRootState } from 'root';
 import { scaleVector2 } from 'modules/geo2d/core';
-import { navigateEntities } from 'modules/engine/duck';
 import { isFacetType, XhessFacetType } from 'xhess/models/XhessEntity';
+import { navigateEntity } from 'xhess/duck';
 
 export const NavigableArea: React.FC = () => {
   const dispatch = useDispatch();
@@ -14,11 +14,13 @@ export const NavigableArea: React.FC = () => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
     const targetRaw = scaleVector2([ e.clientX - left, e.clientY - top ], 1 / camera.scale);
     const target = targetRaw.map(n => Math.floor(n) + 0.5) as typeof targetRaw;
-    const entitiesToMove = engine.entities.filter(entity => {
+    const entityToMove = engine.entities.find(entity => {
       const actor = entity.facets.find(isFacetType(XhessFacetType.Actor));
       return actor && actor.selected;
     });
-    dispatch(navigateEntities({ entitiesToMove, target }));
+    if (entityToMove) {
+      dispatch(navigateEntity({ entityToMove, target }));
+    }
   };
 
   return (

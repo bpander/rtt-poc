@@ -1,13 +1,12 @@
 import { createSelector } from 'reselect';
 
 import { Shape2, addVector2, Vector2, getDistance, rotatePoint } from 'modules/geo2d/core';
-import { getNavMesh2d, Edge, getPath } from 'modules/geo2d/navMesh2d';
+import { getNavMesh2d, Edge } from 'modules/geo2d/navMesh2d';
 import { createSlice } from 'modules/create-slice';
 
 import { Camera, emptyCamera } from '../models/Camera';
 import { Entity, isStockFacetType, FacetType } from '../models/Entity';
-import { removeFirst } from 'util/arrays';
-import { isFacetType } from 'xhess/models/XhessEntity';
+import { removeFirst, last } from 'util/arrays';
 
 export interface EngineState {
   elapsed: number;
@@ -31,6 +30,7 @@ const { reducer, update, configureAction } = createSlice(initialEngineState, 'EN
 
 export const engineReducer = reducer;
 export const updateEngine = update;
+export const configureEngineAction = configureAction;
 
 export const tick = configureAction<number>(
   'TICK',
@@ -77,20 +77,4 @@ export const getNavMeshHoles = createSelector(
 export const getNavMeshGraph = createSelector(
   (engineState: EngineState) => engineState.navMesh,
   navMesh => getNavMesh2d(navMesh),
-);
-
-export const navigateEntities = configureAction<{ entitiesToMove: Entity[]; target: Vector2 }>(
-  'MOVE_NAV_MESH_AGENTS',
-  ({ entitiesToMove, target }) => s => {
-    const g = getNavMeshGraph(s);
-    const entities = entitiesToMove.reduce((running, entity) => {
-      const agent = entity.facets.find(isFacetType(FacetType.NavMeshAgent));
-      if (!agent) {
-        return running;
-      }
-      const path = getPath(g, s.navMesh.flat(), entity.position, target);
-      return removeFirst(running, entity, { ...entity, facets: removeFirst(entity.facets, agent, { ...agent, path }) })
-    }, s.entities);
-    return { ...s, entities };
-  },
 );
