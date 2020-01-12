@@ -26,6 +26,16 @@ const initialEntities: XhessEntity[] = [
     ],
   },
   {
+    id: 'player_scissors2',
+    name: EntityName.Player,
+    position: [ 3.5, 1.5 ],
+    rotation: 0,
+    facets: [
+      { type: FacetType.NavMeshAgent, path: [], velocity: 9 },
+      { type: XhessFacetType.Actor, teamName: 'blue', selected: true },
+    ],
+  },
+  {
     id: 'box1',
     name: EntityName.Box,
     position: [ 2, 2 ],

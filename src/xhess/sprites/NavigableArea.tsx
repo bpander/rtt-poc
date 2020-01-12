@@ -3,10 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { useRootState } from 'root';
 import { scaleVector2 } from 'modules/geo2d/core';
-import { updateEngine, getNavMeshGraph } from 'modules/engine/duck';
-import { FacetType } from 'modules/engine/models/Entity';
-import { removeFirst } from 'util/arrays';
-import { getPath } from 'modules/geo2d/navMesh2d';
+import { navigateEntities } from 'modules/engine/duck';
 import { isFacetType, XhessFacetType } from 'xhess/models/XhessEntity';
 
 export const NavigableArea: React.FC = () => {
@@ -15,24 +12,13 @@ export const NavigableArea: React.FC = () => {
   const { width, height, camera } = engine;
   const onAreaClick = (e: React.MouseEvent<SVGRectElement>) => {
     const { left, top } = e.currentTarget.getBoundingClientRect();
-    const destination = scaleVector2([ e.clientX - left, e.clientY - top ], 1 / camera.scale);
-    const navMeshGraph = getNavMeshGraph(engine);
-    const entities = engine.entities.map(entity => {
+    const targetRaw = scaleVector2([ e.clientX - left, e.clientY - top ], 1 / camera.scale);
+    const target = targetRaw.map(n => Math.floor(n) + 0.5) as typeof targetRaw;
+    const entitiesToMove = engine.entities.filter(entity => {
       const actor = entity.facets.find(isFacetType(XhessFacetType.Actor));
-      if (!actor || !actor.selected) {
-        return entity;
-      }
-      const facet = entity.facets.find(isFacetType(FacetType.NavMeshAgent));
-      if (!facet) {
-        return entity;
-      }
-      const path = getPath(navMeshGraph, engine.navMesh.flat(), entity.position, destination);
-      return {
-        ...entity,
-        facets: removeFirst(entity.facets, facet, { ...facet, path }),
-      };
+      return actor && actor.selected;
     });
-    dispatch(updateEngine({ entities }));
+    dispatch(navigateEntities({ entitiesToMove, target }));
   };
 
   return (
