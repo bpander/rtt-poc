@@ -6,10 +6,11 @@ import { createSlice } from 'modules/create-slice';
 
 import { Camera, emptyCamera } from '../models/Camera';
 import { Entity, isStockFacetType, FacetType } from '../models/Entity';
-import { removeFirst, last } from 'util/arrays';
+import { removeFirst } from 'util/arrays';
 
 export interface EngineState {
   elapsed: number;
+  timeScale: number;
   width: number;
   height: number;
   camera: Camera;
@@ -19,6 +20,7 @@ export interface EngineState {
 
 const initialEngineState: EngineState = {
   elapsed: 0,
+  timeScale: 1,
   width: 0,
   height: 0,
   camera: emptyCamera,
@@ -46,7 +48,7 @@ export const tick = configureAction<number>(
       }
       const [ x1, y1 ] = entity.position;
       const [ x2, y2 ] = wayPoint;
-      const d = agent.velocity * (elapsed / 1000);
+      const d = agent.velocity * (elapsed * state.timeScale / 1000);
       const distanceToWayPoint = getDistance(entity.position, wayPoint);
       if (distanceToWayPoint <= d) {
         const facets = removeFirst(entity.facets, agent, { ...agent, path: restOfPath });

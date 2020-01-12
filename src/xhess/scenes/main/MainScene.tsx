@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { FacetType } from 'modules/engine/models/Entity';
@@ -6,13 +6,14 @@ import { updateEngine, getNavMeshHoles } from 'modules/engine/duck';
 import { Scissors } from 'xhess/sprites/Scissors';
 import { Box } from 'xhess/sprites/Box';
 import { NavigableArea } from 'xhess/sprites/NavigableArea';
-import { updateXhess } from 'xhess/duck';
+import { updateXhess, togglePause } from 'xhess/duck';
 import { getEdges } from 'modules/geo2d/navMesh2d';
 import { regularPolygon } from 'modules/geo2d/core';
 import { XhessEntity, XhessFacetType } from 'xhess/models/XhessEntity';
 import { useRootState } from 'root';
 import { EntityName } from 'xhess/enums/EntityName';
 import { Ring } from 'xhess/sprites/Ring';
+import { KeyboardContext } from 'modules/keyboard/Keyboard';
 
 const initialEntities: XhessEntity[] = [
   {
@@ -88,6 +89,11 @@ export const MainScene: React.FC = () => {
       ],
     }));
   }, [ dispatch ]);
+
+  const spaceIsDown = useContext(KeyboardContext).pressed[' '];
+  useEffect(() => {
+    if (spaceIsDown) { dispatch(togglePause({})); }
+  }, [ dispatch, spaceIsDown ]);
 
   return (
     <React.Fragment>

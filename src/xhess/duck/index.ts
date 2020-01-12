@@ -25,6 +25,10 @@ const { reducer, update } = createSlice(initialXhessState, 'XHESS');
 export const xhessReducer = reducer;
 export const updateXhess = update;
 
+export const togglePause = configureEngineAction(
+  'TOGGLE_PAUSE',
+  () => s => ({ ...s, timeScale: s.timeScale ? 0 : 1 }),
+);
 
 const canMoveToPoint = (entity: Entity, entities: Entity[], point: Vector2) => {
   return entities.every(e => {

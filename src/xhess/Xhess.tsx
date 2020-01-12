@@ -6,6 +6,7 @@ import { useRootState, rootStore } from 'root';
 import { Provider, useDispatch } from 'react-redux';
 import { updateEngine, tick } from 'modules/engine/duck';
 import { emptyCamera } from 'modules/engine/models/Camera';
+import { KeyboardProvider } from 'modules/keyboard/Keyboard';
 
 const Renderer: React.FC = () => {
   const dispatch = useDispatch();
@@ -30,7 +31,9 @@ export const Xhess: React.FC = () => {
 
   return (
     <Provider store={rootStore}>
-      <Renderer />
+      <KeyboardProvider>
+        <Renderer />
+      </KeyboardProvider>
     </Provider>
   );
 };
