@@ -38,7 +38,6 @@ export const createIsFacetType = <TFacetMap extends Record<string, AnyFacet>>() 
 export const isStockFacetType = createIsFacetType<FacetMap>();
 
 export interface Entity {
-  id: string;
   name: PropertyKey;
   position: Vector2;
   rotation: number;

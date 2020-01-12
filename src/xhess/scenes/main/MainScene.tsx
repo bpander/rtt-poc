@@ -9,35 +9,30 @@ import { NavigableArea } from 'xhess/sprites/NavigableArea';
 import { updateXhess, togglePause } from 'xhess/duck';
 import { getEdges } from 'modules/geo2d/navMesh2d';
 import { regularPolygon } from 'modules/geo2d/core';
-import { XhessEntity, XhessFacetType } from 'xhess/models/XhessEntity';
+import { XhessEntity } from 'xhess/models/XhessEntity';
 import { useRootState } from 'root';
 import { EntityName } from 'xhess/enums/EntityName';
 import { Ring } from 'xhess/sprites/Ring';
 import { KeyboardContext } from 'modules/keyboard/Keyboard';
+import { HealerEntity, HealerActor } from 'xhess/prefabs/HealerActor';
+import { removeFirst } from 'util/arrays';
 
 const initialEntities: XhessEntity[] = [
   {
-    id: 'player_scissors',
-    name: EntityName.Player,
+    ...HealerEntity,
     position: [ 2.5, 1.5 ],
-    rotation: 0,
-    facets: [
-      { type: FacetType.NavMeshAgent, path: [], velocity: 9 },
-      { type: XhessFacetType.Actor, teamName: 'blue', selected: true },
-    ],
+    facets: removeFirst(
+      HealerEntity.facets,
+      HealerActor,
+      { ...HealerActor, hp: 5, selected: true, teamName: 'blue' },
+    ),
   },
   {
-    id: 'player_scissors2',
-    name: EntityName.Player,
+    ...HealerEntity,
     position: [ 3.5, 1.5 ],
     rotation: 0,
-    facets: [
-      { type: FacetType.NavMeshAgent, path: [], velocity: 9 },
-      { type: XhessFacetType.Actor, teamName: 'blue', selected: true },
-    ],
   },
   {
-    id: 'box1',
     name: EntityName.Box,
     position: [ 2, 2 ],
     rotation: Math.PI / 16,
@@ -49,7 +44,6 @@ const initialEntities: XhessEntity[] = [
     ],
   },
   {
-    id: 'box2',
     name: EntityName.Box,
     position: [ 4, 11 ],
     rotation: -Math.PI / 4,
@@ -61,7 +55,6 @@ const initialEntities: XhessEntity[] = [
     ],
   },
   {
-    id: 'ring',
     name: EntityName.Ring,
     position: [ 5, 5 ],
     rotation: 0,
@@ -98,12 +91,13 @@ export const MainScene: React.FC = () => {
   return (
     <React.Fragment>
       <NavigableArea />
-      {engine.entities.map(entity => {
+      {engine.entities.map((entity, i) => {
         switch (entity.name) {
           // TODO: There's probably a more concise way of doing this
-          case EntityName.Box: return <Box key={entity.id} entity={entity} />;
-          case EntityName.Ring: return <Ring key={entity.id} entity={entity} />;
-          case EntityName.Player: return <Scissors key={entity.id} entity={entity} />;
+          // TODO: Would be nice to key off of something other than the index
+          case EntityName.Box: return <Box key={i} entity={entity} />;
+          case EntityName.Ring: return <Ring key={i} entity={entity} />;
+          case EntityName.Player: return <Scissors key={i} entity={entity} />;
           default: return null;
         }
       })}

@@ -7,6 +7,8 @@ export enum XhessFacetType {
 export interface ActorFacet extends FacetBase<XhessFacetType.Actor> {
   teamName: string;
   selected: boolean;
+  maxHp: number;
+  hp: number;
 }
 
 export type XhessFacet =
